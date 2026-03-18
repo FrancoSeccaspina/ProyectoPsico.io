@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:dev": "nodemon --watch source --ext ts --exec \"tsx ./source/app.ts\""
   },
   "keywords": [],
   "author": "",
@@ -38,6 +38,7 @@
     "nodemon": "^3.1.14",
     "sequelize-cli": "^6.6.5",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
