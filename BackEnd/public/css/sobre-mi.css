@@ -1,0 +1,180 @@
+:root {
+    --rosa-fondo: #fce4ec;
+    --rosa-fuerte: #d4a5b9;
+    --crema: #f5f3f0;
+    --texto-oscuro: #333333;
+    --texto-suave: #666666;
+    --serif: 'Playfair Display', serif;
+    --sans: 'Montserrat', sans-serif;
+}
+
+/* 1. Contenedor General */
+.contenedorSobre {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* 2. Sección Principal (Hero) */
+.principal {
+    text-align: center;
+    padding: 100px 20px;
+    background-color: var(--crema);
+}
+
+.principal h1 {
+    font-family: var(--serif);
+    font-size: 3.5rem;
+    max-width: 800px;
+    margin: 20px auto;
+    line-height: 1.1;
+}
+
+.principal p.gris {
+    color: var(--texto-suave);
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+}
+
+.principal a {
+   display: inline-block;
+    padding: 15px 35px;
+    background-color: #d4a5b9;
+    color: #ffffff;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 15px rgba(212, 165, 185, 0.4);
+}
+
+.principal a:hover{
+    color: black;
+}
+
+/* 3. Scrolling Text Animation */
+.scrolling-text {
+    background-color: var(--rosa-fuerte);
+    color: white;
+    padding: 15px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    font-family: var(--sans);
+    font-weight: bold;
+}
+
+.scrolling-text span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scroll 15s linear infinite;
+}
+
+@keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* 4. Sección Sobre Mí */
+.sobre-mi {
+    max-width: 900px;
+    margin: 80px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.sobre-mi .img img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 50%; /* Imagen circular */
+    margin-bottom: 30px;
+    border: 5px solid var(--rosa-fondo);
+}
+
+.sobre-mi h2 {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    margin: 10px 0;
+}
+
+.sobre-mi h3 {
+    color: var(--rosa-fuerte);
+    margin-bottom: 30px;
+}
+
+.sobre-mi p {
+    line-height: 1.8;
+    margin-bottom: 20px;
+    text-align: justify;
+    color: var(--texto-oscuro);
+}
+
+/* 5. Banner Transformar (Reutilizado) */
+.banner-transformar {
+    background-color: var(--rosa-fondo);
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.divider-line {
+    width: 50px;
+    height: 2px;
+    background: var(--texto-oscuro);
+    margin: 0 auto 20px;
+}
+
+/* 6. Misión y Visión (Grid) */
+.mision-vision {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    max-width: 1100px;
+    margin: 80px auto;
+    padding: 0 40px;
+}
+
+.mision-vision-item {
+    text-align: center;
+}
+
+.mision-vision-item i {
+    font-size: 2.5rem;
+    color: #8d7a6b;
+    margin-bottom: 15px;
+}
+
+.mision-vision-item h2 {
+    font-family: var(--serif);
+    color: #8d7a6b;
+    margin-bottom: 15px;
+}
+
+/* 7. Footer fix */
+.main-footer {
+    width: 100%;
+    background-color: var(--rosa-fondo);
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+
+@media (max-width: 768px) {
+    .principal h1 {
+        font-size: 2.2rem;
+    }
+
+    .mision-vision {
+        grid-template-columns: 1fr; /* Una columna en móvil */
+        gap: 40px;
+    }
+
+    .sobre-mi .img img {
+        width: 180px;
+        height: 180px;
+    }
+
+    .sobre-mi p {
+        text-align: left; /* Mejor lectura en móvil */
+    }
+}

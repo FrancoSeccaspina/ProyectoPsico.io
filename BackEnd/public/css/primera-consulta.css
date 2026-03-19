@@ -1,0 +1,204 @@
+:root {
+    --rosa-fondo: #fce4ec;
+    --rosa-fuerte: #d4a5b9;
+    --rosa-hover: #b98ca0;
+    --texto-oscuro: #333333;
+    --texto-suave: #666666;
+    --blanco: #ffffff;
+    --crema: #fff9f0;
+    --borde: #e0e0e0;
+}
+
+/* Ajuste principal para que el footer sea independiente */
+.contenedorConsulta {
+    width: 100%; /* El main ahora ocupa todo el ancho */
+    font-family: 'Montserrat', sans-serif;
+    color: var(--texto-oscuro);
+}
+
+/* Creamos una clase para centrar el contenido de las secciones SIN afectar al footer */
+.titulosPrincipal, 
+.subtitulo, 
+.session, 
+.Rerservar {
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* =========================================
+   2. Cabecera de la Consulta
+   ========================================= */
+.titulosPrincipal {
+    text-align: center;
+    margin-top: 60px;
+    margin-bottom: 50px;
+}
+
+.titulosPrincipal h1 {
+    font-size: 2.5rem;
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 15px;
+    line-height: 1.2;
+}
+
+.titulosPrincipal p {
+    font-size: 1.2rem;
+    color: var(--texto-suave);
+}
+
+/* =========================================
+   3. Subtítulo y Cuadro de Precio
+   ========================================= */
+.subtitulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--crema);
+    padding: 20px 40px;
+    border-radius: 15px;
+    border: 1px solid var(--borde);
+    margin-bottom: 40px;
+}
+
+.subtitulo h3 {
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.chartPrecio {
+    text-align: right;
+}
+
+.chartPrecio p { margin: 0; }
+.chartPrecio p:first-child {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--rosa-fuerte);
+}
+
+.chartPrecio p:last-child {
+    font-size: 0.9rem;
+    color: var(--texto-suave);
+    text-transform: uppercase;
+}
+
+/* =========================================
+   4. Cuerpo de la Sesión
+   ========================================= */
+.session {
+    line-height: 1.8;
+    margin-bottom: 50px;
+}
+
+.session h5 {
+    font-size: 1.1rem;
+    color: var(--rosa-fuerte);
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.session p {
+    margin-bottom: 25px;
+}
+
+.vinietas {
+    background-color: var(--rosa-fondo);
+    padding: 30px;
+    border-radius: 15px;
+}
+
+.vinietas ul {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    padding: 0;
+}
+
+.vinietas li {
+    list-style: none;
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+}
+
+.vinietas li::before {
+    content: '✔';
+    position: absolute;
+    left: 0;
+    color: var(--rosa-fuerte);
+    font-weight: bold;
+}
+
+.terminos {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--texto-suave);
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 20px;
+}
+
+/* =========================================
+   5. Botón de Reserva
+   ========================================= */
+.Rerservar {
+    text-align: center;
+    margin: 60px auto;
+}
+
+.Rerservar a {
+    display: inline-block;
+    background-color: var(--rosa-fuerte);
+    color: white;
+    padding: 18px 50px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 20px rgba(212, 165, 185, 0.4);
+    transition: all 0.3s ease;
+}
+
+.Rerservar a:hover {
+    background-color: var(--rosa-hover);
+    transform: translateY(-3px);
+}
+
+/* =========================================
+   6. FOOTER (Arreglado para ocupar el 100%)
+   ========================================= */
+.main-footer {
+    width: 100%;
+    background-color: var(--rosa-fondo); /* Aseguramos que el fondo se extienda */
+    margin-top: 80px;
+}
+
+/* =========================================
+   7. Responsividad
+   ========================================= */
+@media (max-width: 768px) {
+    .titulosPrincipal h1 {
+        font-size: 1.8rem;
+    }
+
+    .subtitulo {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .chartPrecio {
+        text-align: center;
+    }
+
+    .Rerservar a {
+        display: block;
+        padding: 15px 0;
+    }
+}
