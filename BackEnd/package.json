@@ -1,21 +1,18 @@
 {
-  "name": "backend",
+  "name": "backend-psico",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "source/server.ts",
+  "type": "module",
   "scripts": {
-    "start:dev": "nodemon --watch source --ext ts --exec \"tsx ./source/app.ts\""
+    "start:dev": "nodemon --watch source -e ts,ejs --exec tsx source/database/config/server.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
-    "ejs": "^5.0.1",
-    "express": "^5.2.1",
+    "ejs": "^3.1.10",
+    "express": "^4.22.1",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
@@ -24,21 +21,21 @@
     "mysql2": "^3.20.0",
     "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
-    "nodemailer": "^8.0.2",
+    "nodemailer": "^8.0.3",
     "sequelize": "^6.37.8"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
+    "@types/express": "^4.17.25",
     "@types/express-session": "^1.18.2",
     "@types/method-override": "^3.0.0",
     "@types/multer": "^2.1.0",
-    "@types/node": "^25.5.0",
+    "@types/node": "^20.19.37",
     "nodemon": "^3.1.14",
     "sequelize-cli": "^6.6.5",
     "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
+    "tsx": "^4.6.2",
     "typescript": "^5.9.3"
   }
 }

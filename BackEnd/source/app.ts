@@ -1,24 +1,20 @@
 import express from 'express';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
+import usuariosRoutes from './routes/usuario.routes.js';
 const app = express();
-const PORT = process.env.PORT || 3000;
-const __dirname = path.dirname(__filename);
 
-// 1. Configurar EJS
 app.set('view engine', 'ejs');
+// Usamos path.resolve para evitar problemas de rutas en Windows
+app.set('views', path.resolve(process.cwd(), 'source', 'views'));
 
-// 2. LA RUTA CORRECTA: 
-// Como app.ts y la carpeta views están en el mismo nivel (dentro de source)
-app.set('views', path.join(__dirname, 'views'));
+// Agregamos la carpeta public para que tus imágenes vuelvan a cargar
+app.use(express.static(path.resolve(process.cwd(), 'public')));
+app.use(express.json());
 
-// 3. Ruta para el Home
 app.get('/', (req, res) => {
-    res.render('home'); // Esto buscará en source/views/home.ejs
+    // Recuerda pasar la variable 'nombre' que pedía tu footer
+    res.render("home");
 });
+app.use('/api/usuarios', usuariosRoutes);
 
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-    console.log(`📁 Buscando vistas en: ${path.join(__dirname, 'views')}`);
-});
+export default app;

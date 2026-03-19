@@ -7,42 +7,45 @@ import {
   CreationOptional,
 } from 'sequelize';
 
-interface AutenticacionAttributes{
-    id: number,
-    id_usuario: number,
-    email: string,
-    password_hash: string
+interface AutenticacionAttributes {
+    id: number;
+    id_usuario: number;
+    email: string;
+    password_hash: string;
 }
 
-class Autenticacion extends Model<InferAttributes<Autenticacion>, InferCreationAttributes<Autenticacion>> implements AutenticacionAttributes{
+// Cambiamos a 'export' para que el index/controller lo vea
+export class Autenticacion extends Model<InferAttributes<Autenticacion>, InferCreationAttributes<Autenticacion>> implements AutenticacionAttributes {
     declare id: CreationOptional<number>;
     declare email: string;
     declare password_hash: string;
     declare id_usuario: number;
 
-     static associate(models: any) {
-    Autenticacion.belongsTo(models.Usuario, {
-      foreignKey: 'id_usuario', 
-    });
-  }
+    static associate(models: any) {
+      // Usamos el objeto models que viene por parámetro para evitar undefined
+      this.belongsTo(models.Usuario, {
+        foreignKey: 'id_usuario',
+        as: 'usuario'
+      });
+    }
 }
 
-const initAutenticacionModel = (sequelize: Sequelize) => {
+export const initAutenticacionModel = (sequelize: Sequelize) => {
   Autenticacion.init(
     {
       id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false,
+          type: DataTypes.INTEGER,
+          primaryKey: true,
+          autoIncrement: true,
+          allowNull: false,
       },
       email: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
+         type: DataTypes.STRING(100), allowNull: false 
+        
       },
       password_hash: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
+         type: DataTypes.STRING(255), allowNull: false 
+        
       },
       id_usuario: {
         type: DataTypes.INTEGER,
@@ -60,10 +63,7 @@ const initAutenticacionModel = (sequelize: Sequelize) => {
       modelName: 'Autenticacion',
       tableName: 'autenticacion',
       freezeTableName: true,
-      paranoid: true,
       timestamps: false,
     }
   );
 };
-
-export { Autenticacion, initAutenticacionModel };

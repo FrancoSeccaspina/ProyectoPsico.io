@@ -1,199 +1,241 @@
+import { validationResult } from "express-validator";
 import { Request, Response } from "express";
-import { Reserva } from "../database/models/reserva";
-import { Usuario } from "../database/models/usuario";
+import { Autenticacion } from '../database/models/autenticacion.js';
+import { Usuario } from '../database/models/usuario.js';
+import bcrypt from 'bcryptjs';
+import { firmarToken, obtenerPayload } from "../utils/generadorToken.js";
 
-export class ReservaController {
+export class UsuarioController {
 
-  // sincronizar tabla
-  async syncTable(): Promise<void> {
+  async show(req: Request, res: Response): Promise<Response> {
     try {
-      await Reserva.sync();
-      console.log("Tabla reservas sincronizada");
+      const usuario = await Usuario.findOne({ where: { id: req.params.id } });
+
+      if (usuario) {
+        return res.status(200).json({
+          success: true,
+          message: "Usuario encontrado",
+          usuario,
+        });
+      }
+
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado",
+      });
     } catch (error) {
-      console.error("Error sincronizando reservas:", error);
+      console.error("Error en show:", (error as Error).message);
+      return res.status(500).json({
+        success: false,
+        message: "Error interno del servidor",
+      });
     }
   }
 
-  // obtener todas las reservas
-  async getReservas(req: Request, res: Response): Promise<Response> {
+ async showAll(req: Request, res: Response): Promise<Response> {
     try {
-      const reservas = await Reserva.findAll({
+      const usuarios = await Usuario.findAll({
         include: {
-          model: Usuario,
-          attributes: ["id", "nombre", "apellido", "email"],
-        },
-        order: [["fecha_reserva", "ASC"], ["hora_reserva", "ASC"]],
-      });
-
-      return res.status(200).json({
-        message: "Reservas obtenidas correctamente",
-        data: reservas,
-      });
-
-    } catch (error) {
-      console.error("Error en getReservas:", (error as Error).message);
-
-      return res.status(500).json({
-        message: "Error interno del servidor",
-      });
-    }
-  }
-
-  // obtener reserva por id
-  async getReservaById(req: Request, res: Response): Promise<Response> {
-    try {
-      const id = Number(req.params.id);
-
-      if (isNaN(id)) {
-        return res.status(400).json({
-          message: "ID inválido",
-        });
-      }
-
-      const reserva = await Reserva.findByPk(id);
-
-      if (!reserva) {
-        return res.status(404).json({
-          message: "Reserva no encontrada",
-        });
-      }
-
-      return res.status(200).json({
-        message: "Reserva encontrada",
-        data: reserva,
-      });
-
-    } catch (error) {
-      console.error("Error en getReservaById:", (error as Error).message);
-
-      return res.status(500).json({
-        message: "Error interno del servidor",
-      });
-    }
-  }
-
-  // obtener reservas por usuario
-  async getReservasByUsuario(req: Request, res: Response): Promise<Response> {
-    try {
-      const usuarioId = Number(req.params.usuario_id);
-
-      const reservas = await Reserva.findAll({
-        where: { usuario_id: usuarioId },
-        order: [["fecha_reserva", "ASC"]],
-      });
-
-      return res.status(200).json({
-        message: "Reservas del usuario obtenidas",
-        data: reservas,
-      });
-
-    } catch (error) {
-      console.error("Error en getReservasByUsuario:", (error as Error).message);
-
-      return res.status(500).json({
-        message: "Error interno del servidor",
-      });
-    }
-  }
-
-  // crear reserva
-  async createReserva(req: Request, res: Response): Promise<Response> {
-    try {
-      const { usuario_id, fecha_reserva, hora_reserva, observaciones } = req.body;
-
-      // validar si el horario ya está ocupado
-      const reservaExistente = await Reserva.findOne({
-        where: {
-          fecha_reserva,
-          hora_reserva,
+          model: Autenticacion,
+          attributes: ["email"],
         },
       });
-
-      if (reservaExistente) {
-        return res.status(400).json({
-          message: "Ese horario ya está reservado",
+      if (usuarios.length > 0) {
+        return res.status(200).json({
+          success: true,
+          message: "Usuarios encontrados",
+          usuarios,
         });
       }
-
-      const nuevaReserva = await Reserva.create({
-        usuario_id,
-        fecha_reserva,
-        hora_reserva,
-        observaciones,
-        estado: "PENDIENTE",
+      return res.status(404).json({
+        success: false,
+        message: "No se encontraron usuarios",
       });
-
-      return res.status(201).json({
-        message: "Reserva creada correctamente",
-        data: nuevaReserva,
-      });
-
     } catch (error) {
-      console.error("Error en createReserva:", (error as Error).message);
-
+      console.error("Error en show:", (error as Error).message);
       return res.status(500).json({
+        success: false,
         message: "Error interno del servidor",
       });
     }
   }
+async softDelete(req: Request, res: Response): Promise<Response> {
+  try {
+    const { id } = req.params;
 
-  // actualizar reserva
-  async updateReserva(req: Request, res: Response): Promise<Response> {
-    try {
-      const id = Number(req.params.id);
+    // Buscamos al usuario
+    const usuario = await Usuario.findByPk(id);
 
-      const reserva = await Reserva.findByPk(id);
-
-      if (!reserva) {
-        return res.status(404).json({
-          message: "Reserva no encontrada",
-        });
-      }
-
-      await reserva.update(req.body);
-
-      return res.status(200).json({
-        message: "Reserva actualizada correctamente",
-        data: reserva,
-      });
-
-    } catch (error) {
-      console.error("Error en updateReserva:", (error as Error).message);
-
-      return res.status(500).json({
-        message: "Error interno del servidor",
+    if (!usuario) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado",
       });
     }
+
+    // Al no haber columna 'rol' o 'estado', ejecutamos un borrado físico
+    await usuario.destroy();
+
+    return res.status(200).json({
+      success: true,
+      message: "Usuario eliminado de la base de datos correctamente",
+    });
+
+  } catch (error) {
+    console.error("Error al borrar usuario:", (error as Error).message);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno al procesar la baja",
+    });
   }
-
-  // eliminar reserva
-  async deleteReserva(req: Request, res: Response): Promise<Response> {
-    try {
-      const id = Number(req.params.id);
-
-      const reserva = await Reserva.findByPk(id);
-
-      if (!reserva) {
-        return res.status(404).json({
-          message: "Reserva no encontrada",
-        });
-      }
-
-      await reserva.destroy();
-
-      return res.status(200).json({
-        message: "Reserva eliminada correctamente",
-      });
-
-    } catch (error) {
-      console.error("Error en deleteReserva:", (error as Error).message);
-
-      return res.status(500).json({
-        message: "Error interno del servidor",
-      });
-    }
-  }
-
 }
 
-export default new ReservaController();
+ async update(req: Request, res: Response): Promise<Response | void> {
+    try {
+      const { id } = req.params;
+      const { nombre, apellido, email, celular, dni, aclaracion } = req.body;
+
+      const usuario = await Usuario.findOne({ where: { id } });
+      if (!usuario) {
+        return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+      }
+
+      const files = req.files as {
+        [fieldname: string]: Express.Multer.File[];
+      };
+
+      await usuario.update({
+        apellido,
+        nombre,
+        celular,
+        email,
+        dni,
+        aclaracion
+      });
+
+      // Actualizar sesión si corresponde
+      if (req.session.usuarioLogueado) {
+        Object.assign(req.session.usuarioLogueado, {
+          apellido,
+          nombre,
+          celular,
+          email,
+          aclaracion
+        });
+      }
+
+      // 🔁 Redireccionar al perfil
+      return res.redirect('/perfil');
+
+    } catch (error) {
+      console.error("Error al actualizar usuario:", (error as Error).message);
+      return res.status(500).json({ success: false, message: "Error al actualizar usuario" });
+    }
+  }
+
+async changePassword(req: Request, res: Response): Promise<void> {
+    try {
+      const { token } = req.params;
+      const { contrasenia } = req.body;
+
+      const decodedUsuario = obtenerPayload(token);
+      const usuario = await Autenticacion.findOne({ where: { id_usuario: decodedUsuario.id } });
+
+      if (!usuario) {
+        res.status(404).render("login", {
+          mostrarModal: true,
+          modalTitle: "Recuperar contraseña",
+          modalMessage: "Usuario no encontrado"
+        });
+        return
+      }
+
+      const hashedPassword = bcrypt.hashSync(contrasenia, 8);
+      await usuario.update({ password_hash: hashedPassword });
+
+      res.status(200).render("login", {
+        mostrarModal: true,
+        modalTitle: "Recuperar contraseña",
+        modalMessage: "Autenticacion actualizada"
+      });
+      return
+
+    } catch (error) {
+      console.error("Error al cambiar contraseña:", (error as Error).message);
+      res.status(500).render("error", {
+        title: "Error del servidor",
+        code: 500,
+        message: "Error al cambiar la contraseña",
+        description: "Ocurrió un error inesperado.",
+        error: (error as Error).message
+      });
+      return
+    }
+  }
+
+  /*async envioEmail(req: Request, res: Response): Promise<void> {
+    try {
+      const { email } = req.body;
+      const autenticacionUsuario = await Autenticacion.findOne({ where: { email } });
+      if (!autenticacionUsuario) {
+        res.status(404).render("login", {
+          mostrarModal: true,
+          modalTitle: "Recuperar contraseña",
+          modalMessage: "Usuario no encontrado"
+        });
+        return
+      }
+
+      const token = firmarToken({
+        id: autenticacionUsuario.id_usuario,
+        nombre: "",
+        rol: "",
+      }, "5m")
+
+      // Url que le va a llegar al usuario
+      const resetUrl = `http://${REACT_APP_BACKEND_DOMAIN_HOST}/users/change-password/${token}`;
+
+      const info = await transporter.sendMail({
+        from: '"Olvide Mi Contraseña" <activafitness0@gmail.com>',
+        to: email,
+        subject: "Olvide Mi Contraseña",
+        html: //aca se envia un <a> con el link de reset
+          `<p>Hola,</p>
+          <p>Recibimos una solicitud para restablecer tu contraseña.</p>
+          <p>Por favor, haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+          <a href="${resetUrl}">Restablecer Contraseña</a>
+          <p>Si no solicitaste este cambio, podes ignorar este mensaje.</p>
+          <p>Saludos,</p>`
+      });
+
+      res.status(200).render("login", {
+        mostrarModal: true,
+        modalTitle: "Correo de verificación enviado",
+        modalMessage: "Se envió un correo de verificación a la dirección ingresada. Revisá tu bandeja de entrada y seguí las instrucciones para continuar."
+
+      });
+
+    } catch (error) {
+      console.error("Error en solicitudChangePassword:", (error as Error).message);
+      res.status(500).render("error", {
+        title: "Error del servidor",
+        code: 500,
+        message: "Error al procesar la solicitud de cambio de contraseña",
+        description: "Ocurrió un error inesperado.",
+        error: (error as Error).message
+      });
+      return
+    }
+  }    HAY QUE VER SI ES ASI  */
+
+  async renderChangePassword(req: Request, res: Response) {
+    const { token } = req.params;
+    res.render('changePassword', {
+      token,
+      errors: {},
+      oldData: {}
+    });
+  }
+}
+
+export default new UsuarioController(); 

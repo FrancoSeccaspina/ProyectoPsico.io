@@ -1,84 +1,68 @@
 import { Request, Response } from "express";
-import { Usuario } from "../database/models/usuario";
-import { Autenticacion } from "../database/models/autenticacion";
+import { validationResult } from "express-validator";
+import bcrypt from 'bcryptjs';
+import { Usuario } from "../database/models/usuario.js";
+import { Autenticacion } from "../database/models/autenticacion.js";
 
 export class UsuarioController {
 
-  // Obtener todos los usuarios
+  // Obtener todos los usuarios (SOLO ACTIVOS)
   async getUsuarios(req: Request, res: Response): Promise<Response> {
     try {
       const usuarios = await Usuario.findAll({
+        where: { activo: true }, // <--- FILTRO AUTOMÁTICO
         include: {
           model: Autenticacion,
+          as: 'autenticacion',
           attributes: ["email"],
         },
       });
 
       return res.status(200).json({
-        message: "Usuarios obtenidos correctamente",
+        success: true,
+        message: "Usuarios activos obtenidos correctamente",
         data: usuarios,
       });
-
     } catch (error) {
       console.error("Error en getUsuarios:", (error as Error).message);
-
-      return res.status(500).json({
-        message: "Error interno del servidor",
-      });
+      return res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
   }
 
-  // Obtener usuario por ID
+  // Obtener usuario por ID (Solo si está activo)
   async getUsuarioById(req: Request, res: Response): Promise<Response> {
     try {
       const id = Number(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ success: false, message: "ID inválido" });
 
-      if (isNaN(id)) {
-        return res.status(400).json({
-          message: "ID inválido",
-        });
-      }
-
-      const usuario = await Usuario.findByPk(id, {
-        include: {
-          model: Autenticacion,
-          attributes: ["email"],
-        },
+      const usuario = await Usuario.findOne({
+        where: { id, activo: true }, // <--- FILTRO DE SEGURIDAD
+        include: { model: Autenticacion, as: 'autenticacion', attributes: ["email"] },
       });
 
-      if (!usuario) {
-        return res.status(404).json({
-          message: "Usuario no encontrado",
-        });
-      }
+      if (!usuario) return res.status(404).json({ success: false, message: "Usuario no encontrado o inactivo" });
 
-      return res.status(200).json({
-        message: "Usuario obtenido correctamente",
-        data: usuario,
-      });
-
+      return res.status(200).json({ success: true, data: usuario });
     } catch (error) {
-      console.error("Error en getUsuarioById:", (error as Error).message);
-
-      return res.status(500).json({
-        message: "Error interno del servidor",
-      });
+      return res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
   }
 
-  // Crear usuario
+  // Crear usuario (Por defecto activo: true según modelo)
   async createUsuario(req: Request, res: Response): Promise<Response> {
+    const transaction = await Usuario.sequelize?.transaction();
+    
     try {
-      const { nombre, apellido, email, celular, dni, aclaracion } = req.body;
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
+      }
 
-      const usuarioExistente = await Usuario.findOne({
-        where: { email },
-      });
+      const { nombre, apellido, email, celular, dni, aclaracion, contrasenia } = req.body;
 
-      if (usuarioExistente) {
-        return res.status(400).json({
-          message: "El email ya está registrado",
-        });
+      const existente = await Autenticacion.findOne({ where: { email } });
+      if (existente) {
+        return res.status(400).json({ success: false, message: "El email ya está registrado" });
       }
 
       const nuevoUsuario = await Usuario.create({
@@ -88,19 +72,27 @@ export class UsuarioController {
         celular,
         dni,
         aclaracion,
-      });
+        activo: true // Aseguramos que inicie activo
+      }, { transaction });
+
+      const hashedPassword = await bcrypt.hash(contrasenia, 10);
+      await Autenticacion.create({
+        email,
+        password_hash: hashedPassword,
+        id_usuario: nuevoUsuario.id
+      }, { transaction });
+
+      await transaction?.commit();
 
       return res.status(201).json({
-        message: "Usuario creado correctamente",
-        data: nuevoUsuario,
+        success: true,
+        message: "Usuario registrado con éxito",
+        data: nuevoUsuario
       });
 
     } catch (error) {
-      console.error("Error en createUsuario:", (error as Error).message);
-
-      return res.status(500).json({
-        message: "Error interno del servidor",
-      });
+      if (transaction) await transaction.rollback();
+      return res.status(500).json({ success: false, message: "Error al registrar usuario" });
     }
   }
 
@@ -108,68 +100,51 @@ export class UsuarioController {
   async updateUsuario(req: Request, res: Response): Promise<Response> {
     try {
       const id = Number(req.params.id);
+      const usuario = await Usuario.findOne({ where: { id, activo: true } });
 
-      if (isNaN(id)) {
-        return res.status(400).json({
-          message: "ID inválido",
-        });
-      }
-
-      const usuario = await Usuario.findByPk(id);
-
-      if (!usuario) {
-        return res.status(404).json({
-          message: "Usuario no encontrado",
-        });
-      }
+      if (!usuario) return res.status(404).json({ success: false, message: "Usuario no encontrado" });
 
       await usuario.update(req.body);
 
       return res.status(200).json({
-        message: "Usuario actualizado correctamente",
-        data: usuario,
+        success: true,
+        message: "Datos actualizados correctamente",
+        data: usuario
       });
-
     } catch (error) {
-      console.error("Error en updateUsuario:", (error as Error).message);
-
-      return res.status(500).json({
-        message: "Error interno del servidor",
-      });
+      return res.status(500).json({ success: false, message: "Error al actualizar" });
     }
   }
 
-  // Eliminar usuario
+  // SOFT DELETE: Borrado lógico por ID y Nombre
   async deleteUsuario(req: Request, res: Response): Promise<Response> {
     try {
       const id = Number(req.params.id);
-
-      if (isNaN(id)) {
-        return res.status(400).json({
-          message: "ID inválido",
-        });
-      }
+      const { nombre } = req.body;
 
       const usuario = await Usuario.findByPk(id);
 
       if (!usuario) {
-        return res.status(404).json({
-          message: "Usuario no encontrado",
+        return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+      }
+
+      // Validación de seguridad por nombre (ignorando mayúsculas/minúsculas)
+      if (usuario.nombre.toLowerCase() !== nombre?.toLowerCase()) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "El nombre no coincide con el registro del sistema" 
         });
       }
 
-      await usuario.destroy();
+      await usuario.update({ activo: false }); 
 
       return res.status(200).json({
-        message: "Usuario eliminado correctamente",
+        success: true,
+        message: `El usuario ${usuario.nombre} ${usuario.apellido} ha sido desactivado`,
       });
 
     } catch (error) {
-      console.error("Error en deleteUsuario:", (error as Error).message);
-
-      return res.status(500).json({
-        message: "Error interno del servidor",
-      });
+      return res.status(500).json({ success: false, message: "Error al procesar la baja" });
     }
   }
 }

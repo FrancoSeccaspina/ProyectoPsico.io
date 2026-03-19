@@ -5,42 +5,42 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
+  NonAttribute,
 } from "sequelize";
 
-import { Reserva } from "./reserva";
+import { Reserva } from "./reserva.js"; 
+import { Autenticacion } from "./autenticacion.js";
 
-interface UsuarioAttributes {
-  id: number;
-  nombre: string;
-  apellido: string;
-  email: string;
-  celular?: string;
-  dni?: string;
-  aclaracion?: string;
-}
-
-class Usuario
-  extends Model<InferAttributes<Usuario>, InferCreationAttributes<Usuario>>
-  implements UsuarioAttributes
-{
+export class Usuario extends Model<
+  InferAttributes<Usuario>,
+  InferCreationAttributes<Usuario>
+> {
   declare id: CreationOptional<number>;
   declare nombre: string;
   declare apellido: string;
   declare email: string;
-  declare celular: CreationOptional<string>;
-  declare dni: CreationOptional<string>;
-  declare aclaracion: CreationOptional<string>;
+  declare celular: CreationOptional<string | null>;
+  declare dni: CreationOptional<string | null>;
+  declare aclaracion: CreationOptional<string | null>;
+  declare activo: CreationOptional<boolean>;
 
-  declare Reservas?: Reserva[];
+  declare Reservas?: NonAttribute<Reserva[]>;
+  declare Autenticacion?: NonAttribute<Autenticacion>;
 
   static associate(models: any) {
-    Usuario.hasMany(models.Reserva, {
+    this.hasMany(models.Reserva, {
       foreignKey: "id_usuario",
+      as: "reservas",
+    });
+
+    this.hasOne(models.Autenticacion, {
+      foreignKey: "id_usuario",
+      as: "autenticacion", // Este alias debe ser igual al del include en el controller
     });
   }
 }
 
-const initUsuarioModel = (sequelize: Sequelize) => {
+export const initUsuarioModel = (sequelize: Sequelize) => {
   Usuario.init(
     {
       id: {
@@ -49,47 +49,35 @@ const initUsuarioModel = (sequelize: Sequelize) => {
         autoIncrement: true,
         allowNull: false,
       },
-
-      nombre: {
-        type: DataTypes.STRING(50),
-        allowNull: false,
+      nombre: { 
+        type: DataTypes.STRING(50), allowNull: false 
       },
-
-      apellido: {
-        type: DataTypes.STRING(50),
-        allowNull: false,
+      apellido: { 
+        type: DataTypes.STRING(50), allowNull: false 
       },
-
-      email: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-        unique: true,
+      email: { 
+        type: DataTypes.STRING(100), allowNull: false, unique: true
       },
-
-      celular: {
-        type: DataTypes.STRING(20),
-        allowNull: true,
+      celular: { 
+        type: DataTypes.STRING(20), allowNull: true 
       },
-
-      dni: {
-        type: DataTypes.STRING(20),
-        allowNull: true,
+      dni: { 
+        type: DataTypes.STRING(20), allowNull: true 
       },
-
-      aclaracion: {
-        type: DataTypes.TEXT,
-        allowNull: true,
+      aclaracion: { 
+        type: DataTypes.TEXT, allowNull: true 
+      },
+      activo: { 
+        type: DataTypes.BOOLEAN, 
+        allowNull: false, 
+        defaultValue: true 
       },
     },
     {
       sequelize,
       modelName: "Usuario",
       tableName: "usuarios",
-      freezeTableName: true,
-      paranoid: true,
       timestamps: false,
     }
   );
 };
-
-export { Usuario, initUsuarioModel };

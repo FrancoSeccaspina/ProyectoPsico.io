@@ -1,7 +1,7 @@
 /* POSIBLE RUTAS DE RESERVA */
 
 import { Router } from "express";
-import sesionesController from "../controller/sesiones_personalizadas";
+import sesionesController from "../controller/sesiones_personalizadas.js";
 
 const router = Router();
 
