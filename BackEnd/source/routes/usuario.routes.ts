@@ -1,13 +1,12 @@
-/* POSIBLES RUTAS DE USUARIOS */
-
-import { Router } from "express";
-import usuarioController, { UsuarioController } from "../controller/usersController.js";
+import { Router } from 'express';
+import usuarioController from '../controller/usersController.js';
+import route from './view.routes.js';
 
 const router = Router();
 
+// Obtener todos los activos
 router.get("/", usuarioController.getUsuarios);
 router.get("/:id", usuarioController.getUsuarioById);
-router.post("/", usuarioController.createUsuario);
-router.put("/:id", usuarioController.updateUsuario);
-router.delete('/:id', usuarioController.deleteUsuario);
+router.delete("/:id", usuarioController.deleteUsuario);
+
 export default router;

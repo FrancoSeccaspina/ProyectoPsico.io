@@ -11,10 +11,7 @@ import {
 import { Reserva } from "./reserva.js"; 
 import { Autenticacion } from "./autenticacion.js";
 
-export class Usuario extends Model<
-  InferAttributes<Usuario>,
-  InferCreationAttributes<Usuario>
-> {
+export class Usuario extends Model<InferAttributes<Usuario>, InferCreationAttributes<Usuario>> {
   declare id: CreationOptional<number>;
   declare nombre: string;
   declare apellido: string;
@@ -24,18 +21,16 @@ export class Usuario extends Model<
   declare aclaracion: CreationOptional<string | null>;
   declare activo: CreationOptional<boolean>;
 
-  declare Reservas?: NonAttribute<Reserva[]>;
-  declare Autenticacion?: NonAttribute<Autenticacion>;
-
   static associate(models: any) {
+    // Aquí models.Reserva ya no será undefined porque lo agregamos al index.ts
     this.hasMany(models.Reserva, {
-      foreignKey: "id_usuario",
+      foreignKey: "usuario_id", // Ojo: en tu reserva.ts usaste 'usuario_id'
       as: "reservas",
     });
 
     this.hasOne(models.Autenticacion, {
       foreignKey: "id_usuario",
-      as: "autenticacion", // Este alias debe ser igual al del include en el controller
+      as: "autenticacion",
     });
   }
 }

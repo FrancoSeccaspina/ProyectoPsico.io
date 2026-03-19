@@ -7,44 +7,57 @@ import { Autenticacion } from "../../database/models/autenticacion.js";
 export class UsuarioController {
 
   // 1. OBTENER TODOS (Solo los que no están "borrados")
+  async getUsuarioById(req: Request, res: Response): Promise<Response> {
+    try {
+      const id = Number(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ success: false, message: "ID inválido" });
+      }
+
+      const usuario = await Usuario.findOne({
+        where: { id, activo: true },
+        include: { 
+          model: Autenticacion, 
+          as: 'autenticacion', 
+          attributes: ["email"] 
+        },
+      });
+
+      if (usuario) {
+        return res.status(200).json({
+          success: true,
+          message: "Usuario encontrado",
+          data: usuario,
+        });
+      }
+
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado o inactivo",
+      });
+    } catch (error) {
+      console.error("Error en getUsuarioById:", (error as Error).message);
+      return res.status(500).json({ 
+        success: false, 
+        message: "Error interno del servidor" 
+      });
+    }
+  }
+
+  // Listar TODOS (incluyendo inactivos) - Útil para panel de admin
   async getUsuarios(req: Request, res: Response): Promise<Response> {
     try {
       const usuarios = await Usuario.findAll({
-        where: { activo: true }, // Filtro de seguridad para Soft Delete
-        include: {
-          model: Autenticacion,
-          as: 'autenticacion',
-          attributes: ["email"],
-        },
+        include: { model: Autenticacion, as: 'autenticacion', attributes: ["email"] },
       });
 
       return res.status(200).json({
         success: true,
-        message: "Usuarios activos obtenidos correctamente",
+        message: "Historial completo de usuarios obtenido",
         data: usuarios,
       });
     } catch (error) {
-      console.error("Error en getUsuarios:", (error as Error).message);
-      return res.status(500).json({ success: false, message: "Error interno del servidor" });
-    }
-  }
-
-  // 2. OBTENER POR ID (Verifica que esté activo)
-  async getUsuarioById(req: Request, res: Response): Promise<Response> {
-    try {
-      const id = Number(req.params.id);
-      if (isNaN(id)) return res.status(400).json({ success: false, message: "ID inválido" });
-
-      const usuario = await Usuario.findOne({
-        where: { id, activo: true },
-        include: { model: Autenticacion, as: 'autenticacion', attributes: ["email"] },
-      });
-
-      if (!usuario) return res.status(404).json({ success: false, message: "Usuario no encontrado o inactivo" });
-
-      return res.status(200).json({ success: true, data: usuario });
-    } catch (error) {
-      return res.status(500).json({ success: false, message: "Error interno del servidor" });
+      return res.status(500).json({ success: false, message: "Error interno" });
     }
   }
 

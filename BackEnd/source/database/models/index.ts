@@ -1,37 +1,45 @@
-//import { conexionDB, sequelize } from '../connection/connection'
-import { initUsuarioModel, Usuario } from './usuario.js';
+import { sequelize } from '../config/db.js'; 
+import { Usuario, initUsuarioModel } from './usuario.js';
 import { Autenticacion, initAutenticacionModel } from './autenticacion.js';
-import { Sequelize } from 'sequelize';
+import { Reserva, initReservaModel } from './reserva.js';
+// Importa DetalleReserva si ya tienes el archivo:
+// import { DetalleReserva, initDetalleReservaModel } from './detallereserva.js';
 
-const inicializarDB = async (models: Record<string, any>) => {
+// 1. OBJETO DE MODELOS (Para exportar y asociar)
+export const models = { 
+    Usuario, 
+    Autenticacion, 
+    Reserva,
+    // DetalleReserva 
+};
+
+const inicializarDB = async () => {
   try {
-    await conexionDB();
-
-    // TODO : resolver con un metodo statico en cada modelo
+    // 2. INICIALIZACIÓN (Primero todos los .init)
     initUsuarioModel(sequelize);
     initAutenticacionModel(sequelize);
-    console.log('Modelos inicializados')
-    //Producto.associate({ DetalleReserva });
-    //DetalleReserva.associate({ Producto, Reserva });
-    Object.values(models).forEach(model => {
+    initReservaModel(sequelize);
+    // initDetalleReservaModel(sequelize); 
+
+    // 3. SINCRONIZACIÓN (Opcional: crea columnas faltantes como 'activo')
+    // Desactiva 'alter: true' una vez que la base de datos esté ok
+    await sequelize.sync({ alter: true }); 
+    console.log('🚀 Modelos sincronizados con la DB');
+
+    // 4. ASOCIACIONES
+    Object.values(models).forEach((model: any) => {
       if (model.associate) {
         model.associate(models);
       }
     });
 
-    console.log('Asociaciones de modelos establecidas');
+    console.log('🔗 Asociaciones establecidas correctamente');
   } catch (error) {
-    console.error('Error al inicializar Modelos:', error);
+    console.error('❌ Error al inicializar la base de datos:', error);
   }
-}
-
-export const models = {
-  Usuario,
-  Autenticacion,
 };
 
-inicializarDB(models)
+// Ejecutamos la inicialización
+inicializarDB();
 
-export {
-  Sequelize
-};
+export { sequelize, Usuario, Autenticacion, Reserva };

@@ -1,34 +1,41 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import bcrypt from 'bcryptjs';
-import { Usuario } from "../database/models/usuario.js";
-import { Autenticacion } from "../database/models/autenticacion.js";
+// MAL: import { Usuario } from '../database/models/usuario.js';
+// BIEN:
+import { Usuario, Autenticacion } from '../database/models/index.js';
 
 export class UsuarioController {
 
   // Obtener todos los usuarios (SOLO ACTIVOS)
-  async getUsuarios(req: Request, res: Response): Promise<Response> {
+async getUsuarios(req: Request, res: Response): Promise<Response> {
     try {
+      // Este log te dirá la verdad: si sale false, el import de arriba está mal.
+      console.log("¿Modelos listos?:", { 
+        Usuario: typeof Usuario !== 'undefined', 
+        Autenticacion: typeof Autenticacion !== 'undefined' 
+      });
+
       const usuarios = await Usuario.findAll({
-        where: { activo: true }, // <--- FILTRO AUTOMÁTICO
-        include: {
+        where: { activo: true },
+        include: [{
           model: Autenticacion,
           as: 'autenticacion',
           attributes: ["email"],
-        },
+        }],
       });
 
       return res.status(200).json({
         success: true,
-        message: "Usuarios activos obtenidos correctamente",
+        message: "Usuarios activos obtenidos",
         data: usuarios,
       });
     } catch (error) {
-      console.error("Error en getUsuarios:", (error as Error).message);
-      return res.status(500).json({ success: false, message: "Error interno del servidor" });
+      // Esto nos dirá exactamente qué propiedad falló
+      console.error("Detalle del error:", (error as Error).stack);
+      return res.status(500).json({ success: false, message: "Error interno" });
     }
   }
-
   // Obtener usuario por ID (Solo si está activo)
   async getUsuarioById(req: Request, res: Response): Promise<Response> {
     try {
@@ -119,8 +126,8 @@ export class UsuarioController {
   // SOFT DELETE: Borrado lógico por ID y Nombre
   async deleteUsuario(req: Request, res: Response): Promise<Response> {
     try {
-      const id = Number(req.params.id);
-      const { nombre } = req.body;
+      const { id } = req.params;
+      const { nombre } = req.body; // Validación de seguridad por nombre
 
       const usuario = await Usuario.findByPk(id);
 
@@ -128,23 +135,20 @@ export class UsuarioController {
         return res.status(404).json({ success: false, message: "Usuario no encontrado" });
       }
 
-      // Validación de seguridad por nombre (ignorando mayúsculas/minúsculas)
+      // Validamos que el nombre coincida (opcional, por seguridad)
       if (usuario.nombre.toLowerCase() !== nombre?.toLowerCase()) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "El nombre no coincide con el registro del sistema" 
-        });
+        return res.status(400).json({ success: false, message: "El nombre no coincide con el ID" });
       }
 
-      await usuario.update({ activo: false }); 
+      // Cambiamos el estado a false (0 en la DB)
+      await usuario.update({ activo: false });
 
       return res.status(200).json({
         success: true,
-        message: `El usuario ${usuario.nombre} ${usuario.apellido} ha sido desactivado`,
+        message: `Usuario ${usuario.nombre} desactivado correctamente`
       });
-
     } catch (error) {
-      return res.status(500).json({ success: false, message: "Error al procesar la baja" });
+      return res.status(500).json({ success: false, message: "Error al intentar borrar" });
     }
   }
 }
