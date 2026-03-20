@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
-import usuariosRoutes from './routes/usuario.routes.js';
+import usuariosApiRoutes from './routes/api/usuario.api.routes.js';
+import reservaApiRoutes from './routes/api/reserva.api.routes.js';
 // IMPORTANTE: Esto ejecuta la inicialización y las asociaciones de tus modelos
 import './database/models/index.js'; 
 
@@ -30,6 +31,11 @@ app.get('/consulta-individual', (req, res) => {
 app.get('/consulta-grupal', (req, res) => {
     res.render("consulta-grupal");
 });
-app.use('/api/usuarios', usuariosRoutes);
+app.get('/reservaDetail', (req, res) => {
+    res.render("reservaDetail");
+});
+app.use('/api', 
+    reservaApiRoutes,
+    usuariosApiRoutes);
 
 export default app;

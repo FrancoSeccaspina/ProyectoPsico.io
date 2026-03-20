@@ -31,6 +31,7 @@ export class Reserva extends Model<InferAttributes<Reserva>, InferCreationAttrib
           foreignKey: "reserva_id",
           as: "detalles"
         });
+        
     }
   }
 }

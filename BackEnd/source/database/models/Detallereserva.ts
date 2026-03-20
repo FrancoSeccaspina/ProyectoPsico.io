@@ -33,6 +33,7 @@ class DetalleReserva
   static associate(models: any) {
     DetalleReserva.belongsTo(models.Reserva, {
       foreignKey: "reserva_id",
+      
     });
   }
 }

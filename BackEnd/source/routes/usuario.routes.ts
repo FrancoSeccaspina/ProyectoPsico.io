@@ -5,7 +5,7 @@ import route from './view.routes.js';
 const router = Router();
 
 // Obtener todos los activos
-router.get("/", usuarioController.getUsuarios);
+router.get("/usuarios", usuarioController.getUsuarios);
 router.get("/:id", usuarioController.getUsuarioById);
 router.delete("/:id", usuarioController.deleteUsuario);
 

@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import { Usuario } from "../../database/models/usuario.js";
 import { Autenticacion } from "../../database/models/autenticacion.js";
 
-export class UsuarioController {
+export class UsuarioApiController {
 
   // 1. OBTENER TODOS (Solo los que no están "borrados")
   async getUsuarioById(req: Request, res: Response): Promise<Response> {
@@ -166,4 +166,4 @@ export class UsuarioController {
   }
 }
 
-export default new UsuarioController();
+export default new UsuarioApiController();
