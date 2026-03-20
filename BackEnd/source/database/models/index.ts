@@ -2,31 +2,30 @@ import { sequelize } from '../config/db.js';
 import { Usuario, initUsuarioModel } from './usuario.js';
 import { Autenticacion, initAutenticacionModel } from './autenticacion.js';
 import { Reserva, initReservaModel } from './reserva.js';
-// Importa DetalleReserva si ya tienes el archivo:
-// import { DetalleReserva, initDetalleReservaModel } from './detallereserva.js';
+import { DetalleReserva, initDetalleReservaModel } from './Detallereserva.js'; // ✅ IMPORTAR
 
-// 1. OBJETO DE MODELOS (Para exportar y asociar)
+// 1. OBJETO DE MODELOS
 export const models = { 
     Usuario, 
     Autenticacion, 
     Reserva,
-    // DetalleReserva 
+    DetalleReserva // ✅ AGREGAR
 };
 
 const inicializarDB = async () => {
   try {
-    // 2. INICIALIZACIÓN (Primero todos los .init)
+    // 2. INICIALIZACIÓN
     initUsuarioModel(sequelize);
     initAutenticacionModel(sequelize);
     initReservaModel(sequelize);
-    // initDetalleReservaModel(sequelize); 
+    initDetalleReservaModel(sequelize); // ✅ INICIALIZAR
 
-    // 3. SINCRONIZACIÓN (Opcional: crea columnas faltantes como 'activo')
-    // Desactiva 'alter: true' una vez que la base de datos esté ok
-    await sequelize.sync({ alter: true }); 
+    // ❌ SACAR alter: true (MUY IMPORTANTE)
+    await sequelize.sync(); 
+
     console.log('🚀 Modelos sincronizados con la DB');
 
-    // 4. ASOCIACIONES
+    // 3. ASOCIACIONES
     Object.values(models).forEach((model: any) => {
       if (model.associate) {
         model.associate(models);
@@ -34,12 +33,12 @@ const inicializarDB = async () => {
     });
 
     console.log('🔗 Asociaciones establecidas correctamente');
+
   } catch (error) {
     console.error('❌ Error al inicializar la base de datos:', error);
   }
 };
 
-// Ejecutamos la inicialización
 inicializarDB();
 
-export { sequelize, Usuario, Autenticacion, Reserva };
+export { sequelize, Usuario, Autenticacion, Reserva, DetalleReserva };

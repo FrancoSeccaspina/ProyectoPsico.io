@@ -52,7 +52,7 @@ const initDetalleReservaModel = (sequelize: Sequelize) => {
         allowNull: false,
         references: {
           model: "reservas",
-          key: "id_reserva",
+          key: "id",
         },
         onUpdate: "CASCADE",
         onDelete: "CASCADE",

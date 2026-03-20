@@ -1,8 +1,10 @@
 import express from 'express';
 import path from 'path';
+//APIS
 import usuariosApiRoutes from './routes/api/usuario.api.routes.js';
 import reservaApiRoutes from './routes/api/reserva.api.routes.js';
 // IMPORTANTE: Esto ejecuta la inicialización y las asociaciones de tus modelos
+import reservaRoutes from './routes/reserva.routes.js';
 import './database/models/index.js'; 
 
 const app = express();
@@ -31,11 +33,14 @@ app.get('/consulta-individual', (req, res) => {
 app.get('/consulta-grupal', (req, res) => {
     res.render("consulta-grupal");
 });
-app.get('/reservaDetail', (req, res) => {
-    res.render("reservaDetail");
+app.get('/reserva', (req, res) => {
+    res.render("reserva");
 });
 app.use('/api', 
     reservaApiRoutes,
     usuariosApiRoutes);
+
+
+app.use(reservaRoutes);
 
 export default app;
