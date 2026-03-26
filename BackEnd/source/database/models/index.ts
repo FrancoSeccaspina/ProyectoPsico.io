@@ -2,6 +2,7 @@ import { sequelize } from '../config/db.js';
 import { Usuario, initUsuarioModel } from './usuario.js';
 import { Autenticacion, initAutenticacionModel } from './autenticacion.js';
 import { Reserva, initReservaModel } from './reserva.js';
+import { Turno, initTurnoModel } from './turnos.js'; // ✅ IMPORTAR
 import { DetalleReserva, initDetalleReservaModel } from './Detallereserva.js'; // ✅ IMPORTAR
 
 // 1. OBJETO DE MODELOS
@@ -9,7 +10,8 @@ export const models = {
     Usuario, 
     Autenticacion, 
     Reserva,
-    DetalleReserva // ✅ AGREGAR
+    DetalleReserva,
+    Turno // ✅ AGREGAR
 };
 
 const inicializarDB = async () => {
@@ -18,7 +20,9 @@ const inicializarDB = async () => {
     initUsuarioModel(sequelize);
     initAutenticacionModel(sequelize);
     initReservaModel(sequelize);
-    initDetalleReservaModel(sequelize); // ✅ INICIALIZAR
+    initDetalleReservaModel(sequelize);
+    initTurnoModel(sequelize);
+     // ✅ INICIALIZAR
 
     // ❌ SACAR alter: true (MUY IMPORTANTE)
     await sequelize.sync(); 

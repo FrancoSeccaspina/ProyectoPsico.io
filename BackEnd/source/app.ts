@@ -3,6 +3,7 @@ import path from 'path';
 //APIS
 import usuariosApiRoutes from './routes/api/usuario.api.routes.js';
 import reservaApiRoutes from './routes/api/reserva.api.routes.js';
+import turnosApiRoutes from './routes/api/turnos.api.routes.js';
 // IMPORTANTE: Esto ejecuta la inicialización y las asociaciones de tus modelos
 import reservaRoutes from './routes/reserva.routes.js';
 import './database/models/index.js'; 
@@ -36,9 +37,13 @@ app.get('/consulta-grupal', (req, res) => {
 app.get('/reserva', (req, res) => {
     res.render("reserva");
 });
+app.get('/turnos', (req, res) => {
+    res.render("turnos");
+});
 app.use('/api', 
     reservaApiRoutes,
-    usuariosApiRoutes);
+    usuariosApiRoutes,
+    turnosApiRoutes);
 
 
 app.use(reservaRoutes);
