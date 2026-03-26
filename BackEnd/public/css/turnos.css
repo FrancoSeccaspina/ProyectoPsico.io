@@ -1,0 +1,475 @@
+/* ============================================================
+   turnos.css — Reserva de Turnos
+   Paleta: blanco + gama de rosas
+   Clases sincronizadas con turnos.js
+   ============================================================ */
+/* ---------- Variables ---------- */
+:root {
+  --rose-50:  #fff1f2;
+  --rose-100: #ffe4e6;
+  --rose-200: #fecdd3;
+  --rose-300: #fda4af;
+  --rose-400: #fb7185;
+  --rose-500: #f43f5e;
+  --rose-600: #e11d48;
+
+  --white:    #ffffff;
+  --off-white:#fdf8f8;
+  --text-dark:#2d1a1e;
+  --text-mid: #7a4f57;
+  --text-soft:#b08990;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --shadow-card: 0 8px 40px rgba(244, 63, 94, 0.10);
+  --shadow-hover: 0 12px 48px rgba(244, 63, 94, 0.18);
+
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  background-color: var(--off-white);
+  color: var(--text-dark);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 10% -10%, var(--rose-100) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 110%, var(--rose-200) 0%, transparent 55%);
+  background-attachment: fixed;
+}
+
+/* ---------- Page wrapper ---------- */
+.page {
+  flex: 1;
+  width: min(680px, 92%);
+  margin: 0 auto;
+  padding: 3rem 0 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  animation: fadeUp 0.6s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Títulos ---------- */
+.page > h1 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text-dark);
+  line-height: 1.1;
+}
+
+.page > h1::after {
+  content: '';
+  display: block;
+  margin-top: 0.5rem;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--rose-400), var(--rose-200));
+  border-radius: 2px;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: var(--text-soft);
+  letter-spacing: 0.01em;
+  margin-top: -0.75rem;
+}
+
+/* ---------- Alert ---------- */
+.alert {
+  display: none;
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.alert.success {
+  display: block;
+  background: #f0fdf4;
+  color: #166534;
+  border-left: 3px solid #4ade80;
+}
+
+.alert.error {
+  display: block;
+  background: var(--rose-50);
+  color: var(--rose-600);
+  border-left: 3px solid var(--rose-400);
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--rose-100);
+  transition: box-shadow var(--transition);
+  animation: fadeUp 0.5s ease both;
+}
+
+.card:hover { box-shadow: var(--shadow-hover); }
+
+/* ---------- Navegación del calendario ---------- */
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.cal-nav button {
+  background: none;
+  border: 1.5px solid var(--rose-200);
+  color: var(--rose-500);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition), transform var(--transition);
+}
+
+.cal-nav button:hover {
+  background: var(--rose-500);
+  color: var(--white);
+  border-color: var(--rose-500);
+  transform: scale(1.08);
+}
+
+#month-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-dark);
+  text-transform: capitalize;
+}
+
+/* ---------- Grilla del calendario ---------- */
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    grid-auto-flow: row;
+    align-content: center;
+    align-items: stretch;
+    justify-items: center;
+    justify-content: space-between;
+}
+
+/* Encabezados: Dom, Lun, Mar… */
+.cal-grid .day-header {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  padding-bottom: 0.5rem;
+}
+
+/* ---------- Celdas de días (.day-cell) ---------- */
+.cal-grid .day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 400;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background var(--transition), border-color var(--transition),
+              color var(--transition), transform var(--transition), box-shadow var(--transition);
+  user-select: none;
+}
+
+/* Hover en días hábiles */
+.cal-grid .day-cell:not(.past):not(.weekend):not(.empty):hover {
+  background: var(--rose-200);
+  border-color: var(--rose-400);
+  color: var(--rose-600);
+  transform: scale(1.06);
+}
+
+/* Día de hoy */
+.cal-grid .day-cell.today {
+  border-color: var(--rose-300);
+  font-weight: 500;
+}
+
+/* Día seleccionado */
+.cal-grid .day-cell.selected {
+  background: var(--rose-600) !important;
+  color: var(--white) !important;
+  border-color: var(--rose-600) !important;
+  font-weight: 500;
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.45);
+}
+
+/* Días pasados */
+.cal-grid .day-cell.past {
+  color: #d1c5c6;
+  cursor: not-allowed;
+}
+.cal-grid .day-cell.past:hover {
+  background: none;
+  border-color: transparent;
+  transform: none;
+}
+
+/* Fines de semana */
+.cal-grid .day-cell.weekend {
+  color: #d1c5c6;
+  cursor: not-allowed;
+}
+.cal-grid .day-cell.weekend:hover {
+  background: none;
+  border-color: transparent;
+  transform: none;
+}
+
+/* Celdas vacías */
+.cal-grid .day-cell.empty {
+  cursor: default;
+  border: none;
+}
+.cal-grid .day-cell.empty:hover {
+  background: none;
+  transform: none;
+}
+
+/* Punto indicador de horarios disponibles */
+.cal-grid .dot {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--rose-400);
+  margin-top: 2px;
+}
+
+.cal-grid .day-cell.selected .dot {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- Section label ---------- */
+.section-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+  letter-spacing: 0.01em;
+}
+
+/* ---------- Spinner ---------- */
+.spinner {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  padding: 1.5rem 0;
+  letter-spacing: 0.05em;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ---------- Slots de horarios ---------- */
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.slot {
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--rose-200);
+  background: var(--white);
+  color: var(--text-mid);
+  font-size: 0.88rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition),
+              color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+/* Hover en slot disponible */
+.slot:not(.taken):hover {
+  background: var(--rose-200);
+  border-color: var(--rose-500);
+  color: var(--rose-600);
+  transform: translateY(-2px);
+}
+
+/* Slot seleccionado — JS usa .selected-slot */
+.slot.selected-slot {
+  background: var(--rose-600);
+  border-color: var(--rose-600);
+  color: var(--white);
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.38);
+  transform: translateY(-2px);
+}
+
+/* Slot ocupado — JS usa .taken */
+.slot.taken {
+  background: #f5f5f5;
+  border-color: #e0e0e0;
+  color: #bbb;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* ---------- Formulario ---------- */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+}
+
+.form-row label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.form-row input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1.5px solid var(--rose-200);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--text-dark);
+  background: var(--off-white);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+
+.form-row input::placeholder { color: #c4a8ad; }
+
+.form-row input:focus {
+  border-color: var(--rose-400);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.10);
+}
+
+/* ---------- Botón principal ---------- */
+.btn-primary {
+ background-color: #f43f5e4d; /* El color que pediste (con transparencia) */
+    color: #e11d48; /* Un tono sólido para que el texto sea legible */
+    border: none; /* Borde sólido para dar estructura */
+    /* --- Responsive y Espaciado --- */
+    width: 100%; /* Se expande en móviles */
+    max-width: 320px; /* No se deforma en pantallas grandes */
+    padding: 12px 24px; /* Área de toque cómoda para dedos */
+    /* --- Tipografía y Estilo --- */
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px; /* Bordes redondeados modernos */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+}
+
+.btn-primary:hover {
+    background-color: #f43f5e;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+}
+
+.btn-primary:disabled {
+  background: var(--rose-200);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  filter: none;
+}
+
+/* ---------- Footer ---------- */
+.main-footer {
+  margin-top: auto;
+  background: var(--white);
+  border-top: 1px solid var(--rose-100);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .page {
+    padding: 2rem 0 4rem;
+    gap: 1.25rem;
+  }
+
+  .card {
+    padding: 1.4rem 1.2rem;
+    border-radius: var(--radius-md);
+  }
+
+  .cal-grid { gap: 4px; }
+
+  .cal-grid .day-cell {
+    font-size: 0.78rem;
+    border-radius: 6px;
+  }
+
+  .slot {
+    font-size: 0.82rem;
+    padding: 0.45rem 0.9rem;
+  }
+
+  .btn-primary { font-size: 0.9rem; }
+}
+
+@media (max-width: 360px) {
+  .cal-grid .day-cell { font-size: 0.72rem; }
+  #month-label { font-size: 1.05rem; }
+}

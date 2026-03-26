@@ -32,7 +32,7 @@ header {
   align-items: center;
   padding: 0 40px; 
   
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: transparent;
   border-radius: 50px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   z-index: 1000;
@@ -459,7 +459,7 @@ header {
 }
 
 /* Botón de Reserva */
-.btn-reserve {
+.btn-reserve, .btn-start{
     display: inline-block;
     background-color: #f7d7e8; /* Rosa suave consistente con el resto del sitio */
     color: #6d465b;
