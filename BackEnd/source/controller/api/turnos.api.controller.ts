@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Op } from 'sequelize';
+import { enviarConfirmacionCliente, enviarAvisoAdmin, TurnoMailData } from '../../utils/mailer.js';
 import { Turno } from '../../database/models/turnos.js';
 
 const HORAS_DISPONIBLES = ['09:00:00','10:00:00','11:00:00','12:00:00','14:00:00','15:00:00','16:00:00','17:00:00','18:00:00'];
@@ -65,6 +66,20 @@ export class TurnoApiController {
       telefono: telefono?.trim() || null,
       estado: 'pendiente',
     });
+
+    // 📧 Envío de mails — no bloquea ni cancela la reserva si falla
+    const mailData: TurnoMailData = {
+      nombre: nombre.trim(),
+      email: email.trim().toLowerCase(),
+      telefono: telefono?.trim() || null,
+      fecha,
+      hora: horaFormateada,
+    };
+
+    Promise.all([
+      enviarConfirmacionCliente(mailData),
+      enviarAvisoAdmin(mailData),
+    ]).catch(err => console.error('⚠️  Error al enviar mails (turno guardado igual):', err));
 
     res.status(201).json({ mensaje: 'Turno reservado con éxito', turno: nuevoTurno });
   } catch (error: any) {

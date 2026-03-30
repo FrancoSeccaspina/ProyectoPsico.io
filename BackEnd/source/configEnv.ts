@@ -14,6 +14,11 @@ export const JWT_SECRET = process.env.JWT_SECRET;
 export const REACT_APP_FRONTEND_DOMAIN_HOST = process.env.REACT_APP_FRONTEND_DOMAIN_HOST;
 export const REACT_APP_BACKEND_DOMAIN_HOST = process.env.REACT_APP_BACKEND_DOMAIN_HOST;
 
+// 📧 Mailer
+export const MAIL_USER = process.env.MAIL_USER;
+export const MAIL_PASS = process.env.MAIL_PASS;
+export const MAIL_ADMIN = process.env.MAIL_ADMIN;
+
 export function validarVariablesDeEntorno() {
   const variablesRequeridas = [
     'SESSION_PASSWORD',
@@ -22,6 +27,9 @@ export function validarVariablesDeEntorno() {
     'DATABASE_HOST',
     'TIEMPO_CONTROL_STOCK_MINUTOS',
     'JWT_SECRET',
+    'MAIL_USER',   // ← nuevo
+    'MAIL_PASS',   // ← nuevo
+    'MAIL_ADMIN',  // ← nuevo
   ];
 
   const variablesNoDefinidas = variablesRequeridas.filter(
