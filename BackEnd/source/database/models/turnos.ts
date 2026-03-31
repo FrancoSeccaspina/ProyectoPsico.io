@@ -18,19 +18,22 @@ interface TurnoAttributes {
   telefono?: string | null;
   estado: 'pendiente' | 'confirmado' | 'cancelado';
   created_at?: Date;
+  tipo_sesion: 'primera_sesion' | 'individual' | 'grupal';
 }
 
 interface TurnoCreationAttributes extends Omit<TurnoAttributes, 'id' | 'created_at'> {}
 export class Turno extends Model<TurnoAttributes, TurnoCreationAttributes>
   implements TurnoAttributes {
-  public id!: number;
-  public fecha!: string;
-  public hora!: string;
-  public nombre!: string;
-  public email!: string;
-  public telefono!: string | null;
-  public estado!: 'pendiente' | 'confirmado' | 'cancelado';
-  public readonly created_at!: Date;
+  declare id: number;
+  declare fecha: string;
+  declare hora: string;
+  declare nombre: string;
+  declare email: string;
+  declare telefono: string | null;
+  declare estado: 'pendiente' | 'confirmado' | 'cancelado';
+  declare tipo_sesion: 'primera_sesion' | 'individual' | 'grupal';
+  
+  declare readonly created_at: Date;
 }
 export const initTurnoModel = (sequelize: Sequelize) => {
 Turno.init(
@@ -65,6 +68,11 @@ Turno.init(
       type: DataTypes.ENUM('pendiente', 'confirmado', 'cancelado'),
       allowNull: false,
       defaultValue: 'pendiente',
+    },
+    tipo_sesion: {
+      type: DataTypes.ENUM('primera_sesion', 'individual', 'grupal'),
+      allowNull: false,
+      defaultValue: 'primera_sesion',
     },
   },
   {

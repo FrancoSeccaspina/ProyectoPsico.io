@@ -35,10 +35,10 @@ export class TurnoApiController {
 
     async reservarTurno (req: Request, res: Response): Promise<Response> {
   try {
-    const { fecha, hora, nombre, email, telefono } = req.body;
+    const { fecha, hora, nombre, email, telefono,tipo_sesion } = req.body;
 
-    if (!fecha || !hora || !nombre || !email) {
-      res.status(400).json({ error: 'Faltan campos obligatorios: fecha, hora, nombre, email' });
+    if (!fecha || !hora || !nombre || !email || !tipo_sesion) {
+      res.status(400).json({ error: 'Faltan campos obligatorios: fecha, hora, nombre, email, tipo de sesion' });
       return;
     }
 
@@ -65,6 +65,7 @@ export class TurnoApiController {
       email: email.trim().toLowerCase(),
       telefono: telefono?.trim() || null,
       estado: 'pendiente',
+      tipo_sesion, // ← aquí podrías mapear según lo que envíe el frontend
     });
 
     // 📧 Envío de mails — no bloquea ni cancela la reserva si falla
@@ -74,6 +75,7 @@ export class TurnoApiController {
       telefono: telefono?.trim() || null,
       fecha,
       hora: horaFormateada,
+      tipo_sesion, // ← aquí podrías mapear según lo que envíe el frontend
     };
 
     Promise.all([
@@ -106,6 +108,87 @@ export class TurnoApiController {
     res.json({ mensaje: 'Turno cancelado correctamente' });
   } catch (error) {
     console.error('Error al cancelar turno:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+async getTodosLosTurnos(req: Request, res: Response): Promise<void> {
+  try {
+    const turnos = await Turno.findAll({
+      order: [['fecha', 'ASC'], ['hora', 'ASC']],
+    });
+    res.json(turnos);
+  } catch (error) {
+    console.error('Error al obtener turnos:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+async cambiarEstado(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    if (!['pendiente', 'confirmado', 'cancelado'].includes(estado)) {
+      res.status(400).json({ error: 'Estado inválido' });
+      return;
+    }
+
+    const turno = await Turno.findByPk(id);
+    if (!turno) {
+      res.status(404).json({ error: 'Turno no encontrado' });
+      return;
+    }
+
+    await turno.update({ estado });
+    res.json({ mensaje: 'Estado actualizado', turno });
+  } catch (error) {
+    console.error('Error al cambiar estado:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+async eliminarTurno(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params;
+
+    const turno = await Turno.findByPk(id);
+    if (!turno) {
+      res.status(404).json({ error: 'Turno no encontrado' });
+      return;
+    }
+
+    await turno.destroy();
+    res.json({ mensaje: 'Turno eliminado correctamente' });
+  } catch (error) {
+    console.error('Error al eliminar turno:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
+async editarTurno(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params;
+    const { fecha, hora, nombre, email, telefono, tipo_sesion, estado } = req.body;
+
+    const turno = await Turno.findByPk(id);
+    if (!turno) {
+      res.status(404).json({ error: 'Turno no encontrado' });
+      return;
+    }
+
+    await turno.update({
+      ...(fecha && { fecha }),
+      ...(hora && { hora }),
+      ...(nombre && { nombre: nombre.trim() }),
+      ...(email && { email: email.trim().toLowerCase() }),
+      ...(telefono !== undefined && { telefono: telefono?.trim() || null }),
+      ...(tipo_sesion && { tipo_sesion }),
+      ...(estado && { estado }),
+    });
+
+    res.json({ mensaje: 'Turno actualizado correctamente', turno });
+  } catch (error) {
+    console.error('Error al editar turno:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 }

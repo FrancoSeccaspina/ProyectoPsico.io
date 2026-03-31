@@ -6,13 +6,16 @@ export interface TurnoMailData {
   telefono?: string | null;
   fecha: string;
   hora: string;
+  tipo_sesion: 'primera_sesion' | 'individual' | 'grupal';
 }
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
+export const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
-    user: MAIL_USER,
-    pass: MAIL_PASS,
+      user: "nataliaferri832@gmail.com",
+      pass: "shle hyil rdss uite",
   },
 });
 
@@ -33,6 +36,10 @@ export async function enviarConfirmacionCliente(data: TurnoMailData): Promise<vo
           <tr>
             <td style="padding:10px 12px;background:#f4f4f8;font-weight:600">Horario</td>
             <td style="padding:10px 12px">${data.hora} hs</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 12px;background:#f4f4f8;font-weight:600">Seccion Seleccionada</td>
+            <td style="padding:10px 12px">${data.tipo_sesion} hs</td>
           </tr>
         </table>
         <p style="margin-top:24px;color:#555;font-size:14px">
@@ -71,6 +78,10 @@ export async function enviarAvisoAdmin(data: TurnoMailData): Promise<void> {
           <tr>
             <td style="padding:10px 12px;background:#f4f4f8;font-weight:600">Horario</td>
             <td style="padding:10px 12px">${data.hora} hs</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 12px;background:#f4f4f8;font-weight:600">Seccion Seleccionada</td>
+            <td style="padding:10px 12px">${data.tipo_sesion} hs</td>
           </tr>
         </table>
       </div>
