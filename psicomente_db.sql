@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-03-2026 a las 17:23:20
+-- Tiempo de generación: 31-03-2026 a las 06:41:14
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -105,6 +105,7 @@ CREATE TABLE `turnos` (
   `id` int(11) NOT NULL,
   `fecha` date NOT NULL,
   `hora` time NOT NULL,
+  `tipo_sesion` enum('primera_sesion','individual','grupal') NOT NULL DEFAULT 'primera_sesion',
   `nombre` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
   `telefono` varchar(30) DEFAULT NULL,
@@ -116,14 +117,23 @@ CREATE TABLE `turnos` (
 -- Volcado de datos para la tabla `turnos`
 --
 
-INSERT INTO `turnos` (`id`, `fecha`, `hora`, `nombre`, `email`, `telefono`, `estado`, `created_at`) VALUES
-(1, '2026-04-15', '10:00:00', 'Ana López', 'ana@email.com', '+54 11 1111-0001', 'confirmado', '2026-03-26 01:16:22'),
-(2, '2026-04-15', '14:00:00', 'Juan Pérez', 'juan@email.com', '+54 11 1111-0002', 'confirmado', '2026-03-26 01:16:22'),
-(3, '2026-04-16', '09:00:00', 'Laura Gómez', 'laura@email.com', NULL, 'pendiente', '2026-03-26 01:16:22'),
-(4, '2026-04-16', '11:00:00', 'Carlos Ruiz', 'carlos@email.com', '+54 11 1111-0003', 'confirmado', '2026-03-26 01:16:22'),
-(5, '2026-04-20', '15:00:00', 'Sofía Díaz', 'sofia@email.com', NULL, 'pendiente', '2026-03-26 01:16:22'),
-(6, '2026-03-27', '12:00:00', 'Lucas Aguirre', 'lufrancolu@gmail.com', '01165830511', 'pendiente', '2026-03-26 04:39:52'),
-(7, '2026-03-26', '12:00:00', 'Marina Melgem', 'lufrancolu@gmail.com', '03053743000', 'pendiente', '2026-03-26 04:40:25');
+INSERT INTO `turnos` (`id`, `fecha`, `hora`, `tipo_sesion`, `nombre`, `email`, `telefono`, `estado`, `created_at`) VALUES
+(1, '2026-04-15', '10:00:00', 'primera_sesion', 'Ana López', 'ana@email.com', '+54 11 1111-0001', 'confirmado', '2026-03-26 01:16:22'),
+(2, '2026-04-15', '14:00:00', 'primera_sesion', 'Juan Pérez', 'juan@email.com', '+54 11 1111-0002', 'confirmado', '2026-03-26 01:16:22'),
+(3, '2026-04-16', '09:00:00', 'primera_sesion', 'Laura Gómez', 'laura@email.com', NULL, 'pendiente', '2026-03-26 01:16:22'),
+(4, '2026-04-16', '11:00:00', 'primera_sesion', 'Carlos Ruiz', 'carlos@email.com', '+54 11 1111-0003', 'confirmado', '2026-03-26 01:16:22'),
+(5, '2026-04-20', '15:00:00', 'primera_sesion', 'Sofía Díaz', 'sofia@email.com', NULL, 'pendiente', '2026-03-26 01:16:22'),
+(6, '2026-03-27', '12:00:00', 'primera_sesion', 'Lucas Aguirre', 'lufrancolu@gmail.com', '01165830511', 'pendiente', '2026-03-26 04:39:52'),
+(7, '2026-03-26', '12:00:00', 'primera_sesion', 'Marina Melgem', 'lufrancolu@gmail.com', '03053743000', 'pendiente', '2026-03-26 04:40:25'),
+(8, '2026-04-01', '11:00:00', 'primera_sesion', 'Lucas Aguirre', 'lufrancolu@gmail.com', '01165830511', 'pendiente', '2026-03-31 03:00:15'),
+(9, '2026-04-01', '18:00:00', 'primera_sesion', 'Lucas Aguirre', 'lufrancolu@gmail.com', '01165830511', 'pendiente', '2026-03-31 03:06:45'),
+(10, '2026-03-31', '10:00:00', 'primera_sesion', 'Juan Cattaneo', 'lufrancolu@gmail.com', '01165830511', 'pendiente', '2026-03-31 03:11:18'),
+(11, '2026-03-31', '11:00:00', 'primera_sesion', 'Lucas Aguirre', 'lufrancolu@gmail.com', '17867210044', 'pendiente', '2026-03-31 03:16:46'),
+(12, '2026-03-31', '12:00:00', 'primera_sesion', 'Juan Cattaneo', 'lufrancolu@gmail.com', '01165830511', 'pendiente', '2026-03-31 03:49:13'),
+(13, '2026-03-31', '14:00:00', 'primera_sesion', 'Lucas Aguirre', 'lufrancolu@gmail.com', '01165830511', 'pendiente', '2026-03-31 03:53:25'),
+(14, '2026-03-31', '15:00:00', 'primera_sesion', 'Lucas Aguirre', 'lufrancolu@gmail.com', '01165830511', 'pendiente', '2026-03-31 03:56:42'),
+(15, '2026-03-31', '16:00:00', 'primera_sesion', 'Juan Cattaneo', 'lufrancolu@gmail.com', '01165830511', 'pendiente', '2026-03-31 03:57:56'),
+(16, '2026-03-31', '17:00:00', 'primera_sesion', 'Lucas Aguirre', 'lufrancolu@gmail.com', '01165830511', 'pendiente', '2026-03-31 04:01:07');
 
 -- --------------------------------------------------------
 
@@ -236,7 +246,7 @@ ALTER TABLE `sesiones_personalizadas`
 -- AUTO_INCREMENT de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
