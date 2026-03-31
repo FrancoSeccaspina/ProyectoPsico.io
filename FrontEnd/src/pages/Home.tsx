@@ -1,198 +1,378 @@
-import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import '../css/home.css';
 
-export default function Home() {
-  const navigate = useNavigate();
-  const heroRef = useRef<HTMLDivElement>(null);
+const API_BASE = 'http://localhost:3033';
 
-  useEffect(() => {
-    const els = document.querySelectorAll('.fade-in');
-    els.forEach((el, i) => {
-      (el as HTMLElement).style.animationDelay = `${i * 0.15}s`;
-      el.classList.add('visible');
-    });
-  }, []);
+type EstadoTurno = 'pendiente' | 'confirmado' | 'cancelado';
+type TipoSesion  = 'primera_sesion' | 'individual' | 'grupal';
+
+interface Turno {
+  id: number;
+  fecha: string;
+  hora: string;
+  tipo_sesion: TipoSesion;
+  nombre: string;
+  email: string;
+  telefono?: string | null;
+  estado: EstadoTurno;
+  created_at: string;
+}
+
+interface ModalProps {
+  turno?: Turno | null;
+  onClose: () => void;
+  onSave: () => void;
+}
+
+const TIPO_LABEL: Record<TipoSesion, string> = {
+  primera_sesion: 'Primera sesión',
+  individual:     'Individual',
+  grupal:         'Grupal',
+};
+
+function TurnoModal({ turno, onClose, onSave }: ModalProps): React.ReactElement {
+  const isEdit = !!turno;
+  const [form, setForm] = useState({
+    nombre:      turno?.nombre           ?? '',
+    email:       turno?.email            ?? '',
+    telefono:    turno?.telefono         ?? '',
+    fecha:       turno?.fecha            ?? '',
+    hora:        turno?.hora?.slice(0,5) ?? '',
+    tipo_sesion: turno?.tipo_sesion      ?? 'primera_sesion',
+    estado:      turno?.estado           ?? 'pendiente',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState('');
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ): void => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (): Promise<void> => {
+    if (!form.nombre || !form.email || !form.fecha || !form.hora) {
+      setError('Completá todos los campos obligatorios.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const method = isEdit ? 'PUT' : 'POST';
+      const url    = isEdit
+        ? `${API_BASE}/api/turnos/${turno!.id}`
+        : `${API_BASE}/api/turnos`;
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error('Error al guardar');
+      onSave();
+      onClose();
+    } catch {
+      setError('No se pudo guardar el turno. Verificá la conexión.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div style={s.page}>
-      <style>{css}</style>
-
-      {/* NAV */}
-      <nav style={s.nav}>
-        <span style={s.logo}>NF</span>
-        <div style={s.navLinks}>
-          <button style={s.navLink} onClick={() => navigate('/servicios')}>Servicios</button>
-          <button style={s.navLink} onClick={() => navigate('/reserva')}>Turnos</button>
-          <button style={s.navBtn} onClick={() => navigate('/reserva')}>Reservar</button>
+    <div className="overlay" onClick={onClose}>
+      <div className="modal" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+        <div className="modal-header">
+          <span className="modal-title">{isEdit ? 'Editar Turno' : 'Nuevo Turno'}</span>
+          <button className="close-btn" onClick={onClose}>✕</button>
         </div>
-      </nav>
 
-      {/* HERO */}
-      <section style={s.hero} ref={heroRef}>
-        <div style={s.heroDecor} />
-        <div style={s.heroContent}>
-          <p className="fade-in" style={s.heroTag}>Psicología · Buenos Aires</p>
-          <h1 className="fade-in" style={s.heroTitle}>
-            Un espacio<br />para vos.
-          </h1>
-          <p className="fade-in" style={s.heroDesc}>
-            Acompañamiento psicológico personalizado.<br />
-            Sesiones individuales, grupales y primera consulta.
-          </p>
-          <div className="fade-in" style={s.heroBtns}>
-            <button style={s.btnPrimary} onClick={() => navigate('/reserva')}>
-              Reservar turno
-            </button>
-            <button style={s.btnSecondary} onClick={() => navigate('/servicios')}>
-              Ver servicios
-            </button>
-          </div>
-        </div>
-        <div className="fade-in" style={s.heroVisual}>
-          <div style={s.heroCircle}>
-            <span style={s.heroInitials}>NF</span>
-          </div>
-          <div style={s.heroFloatCard}>
-            <span style={{ fontSize: 22 }}>🧠</span>
-            <span style={{ fontSize: 13, color: '#5a4a3a' }}>+200 sesiones realizadas</span>
-          </div>
-        </div>
-      </section>
+        <div className="modal-body">
+          {error && <div className="error-box">{error}</div>}
 
-      {/* SOBRE MÍ */}
-      <section style={s.about}>
-        <div style={s.aboutInner}>
-          <div style={s.aboutText}>
-            <p style={s.sectionTag}>Sobre mí</p>
-            <h2 style={s.sectionTitle}>Natalia Ferri</h2>
-            <p style={s.aboutDesc}>
-              Soy psicóloga clínica con enfoque en terapia cognitivo-conductual.
-              Mi objetivo es crear un espacio seguro y contenedor donde puedas
-              explorar tus emociones, trabajar tus dificultades y crecer como persona.
-            </p>
-            <p style={s.aboutDesc}>
-              Atiendo de forma presencial y virtual, adaptándome a tus necesidades
-              y tiempos.
-            </p>
-          </div>
-          <div style={s.aboutCards}>
-            {[
-              { icon: '🎓', label: 'Lic. en Psicología', sub: 'UBA' },
-              { icon: '💬', label: 'TCC', sub: 'Enfoque principal' },
-              { icon: '📍', label: 'Buenos Aires', sub: 'Presencial y virtual' },
-            ].map((c) => (
-              <div key={c.label} style={s.aboutCard}>
-                <span style={{ fontSize: 28 }}>{c.icon}</span>
-                <strong style={{ fontSize: 14 }}>{c.label}</strong>
-                <span style={{ fontSize: 12, color: '#9a8a7a' }}>{c.sub}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+          <label className="form-label">Nombre completo *</label>
+          <input className="form-input" name="nombre" value={form.nombre} onChange={handleChange} placeholder="Ej: María García" />
 
-      {/* SERVICIOS PREVIEW */}
-      <section style={s.services}>
-        <p style={s.sectionTag}>Servicios</p>
-        <h2 style={s.sectionTitle}>¿Cómo puedo ayudarte?</h2>
-        <div style={s.serviceCards}>
-          {[
-            { icon: '🧍', title: 'Primera Sesión', desc: 'Una sesión para conocernos y explorar tus necesidades.', tag: 'Inicio' },
-            { icon: '🧠', title: 'Sesión Individual', desc: 'Sesiones personalizadas basadas en tus objetivos.', tag: 'Popular' },
-            { icon: '👥', title: 'Sesiones Grupales', desc: 'Espacios compartidos para crecer en grupo. 5% OFF.', tag: 'Grupal' },
-          ].map((s_) => (
-            <div key={s_.title} className="service-card" style={s.serviceCard}>
-              <span style={{ fontSize: 36, marginBottom: 12 }}>{s_.icon}</span>
-              <span style={s.serviceCardTag}>{s_.tag}</span>
-              <h3 style={s.serviceCardTitle}>{s_.title}</h3>
-              <p style={s.serviceCardDesc}>{s_.desc}</p>
-              <button style={s.serviceCardBtn} onClick={() => navigate('/servicios')}>
-                Conocer más →
-              </button>
+          <label className="form-label">Email *</label>
+          <input className="form-input" name="email" type="email" value={form.email} onChange={handleChange} placeholder="tu@email.com" />
+
+          <label className="form-label">Teléfono</label>
+          <input className="form-input" name="telefono" value={form.telefono ?? ''} onChange={handleChange} placeholder="+54 11 1234-5678" />
+
+          <div className="form-grid-2">
+            <div>
+              <label className="form-label">Fecha *</label>
+              <input className="form-input" name="fecha" type="date" value={form.fecha} onChange={handleChange} />
             </div>
-          ))}
+            <div>
+              <label className="form-label">Hora *</label>
+              <input className="form-input" name="hora" type="time" value={form.hora} onChange={handleChange} />
+            </div>
+          </div>
+
+          <label className="form-label">Tipo de sesión *</label>
+          <select className="form-input" name="tipo_sesion" value={form.tipo_sesion} onChange={handleChange}>
+            <option value="primera_sesion">Primera sesión</option>
+            <option value="individual">Individual</option>
+            <option value="grupal">Grupal</option>
+          </select>
+
+          <label className="form-label">Estado</label>
+          <select className="form-input" name="estado" value={form.estado} onChange={handleChange}>
+            <option value="pendiente">Pendiente</option>
+            <option value="confirmado">Confirmado</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
         </div>
-      </section>
 
-      {/* CTA */}
-      <section style={s.cta}>
-        <h2 style={s.ctaTitle}>¿Listo para dar el primer paso?</h2>
-        <p style={s.ctaDesc}>Reservá tu turno en minutos, de forma simple y segura.</p>
-        <button style={s.btnPrimary} onClick={() => navigate('/reserva')}>
-          Reservar turno ahora
-        </button>
-      </section>
-
-      {/* FOOTER */}
-      <footer style={s.footer}>
-        <span style={s.logo}>NF</span>
-        <p style={{ color: '#9a8a7a', fontSize: 13 }}>© 2026 Natalia Ferri · Psicología</p>
-        <p style={{ color: '#9a8a7a', fontSize: 13 }}>nataliaferri832@gmail.com</p>
-      </footer>
+        <div className="modal-footer">
+          <button className="btn-secondary" onClick={onClose}>Cancelar</button>
+          <button className="btn-primary" onClick={handleSubmit} disabled={loading} style={{ opacity: loading ? 0.7 : 1 }}>
+            {loading ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear turno'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
-const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+export default function Home(): React.ReactElement {
+  const [turnos,       setTurnos]       = useState<Turno[]>([]);
+  const [loading,      setLoading]      = useState<boolean>(true);
+  const [fetchError,   setFetchError]   = useState<string>('');
+  const [modalOpen,    setModalOpen]    = useState<boolean>(false);
+  const [editTurno,    setEditTurno]    = useState<Turno | null>(null);
+  const [deleteId,     setDeleteId]     = useState<number | null>(null);
+  const [filterEstado, setFilterEstado] = useState<string>('todos');
+  const [searchNombre, setSearchNombre] = useState<string>('');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #faf8f4; }
+  const fetchTurnos = async (): Promise<void> => {
+    setLoading(true);
+    setFetchError('');
+    try {
+      const res  = await fetch(`${API_BASE}/api/turnos/todos`);
+      const json = await res.json();
+      setTurnos(Array.isArray(json) ? json : (json.data ?? []));
+    } catch {
+      setFetchError('No se pudo conectar con la API. Verificá que el servidor esté corriendo.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
-  .fade-in.visible { opacity: 1; transform: translateY(0); }
+  useEffect(() => { fetchTurnos(); }, []);
 
-  .service-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba(90,74,58,0.12) !important;
-  }
-`;
+  const handleDelete = async (id: number): Promise<void> => {
+    try {
+      await fetch(`${API_BASE}/api/turnos/${id}`, { method: 'DELETE' });
+      setDeleteId(null);
+      fetchTurnos();
+    } catch {
+      alert('Error al eliminar el turno.');
+    }
+  };
 
-const s: Record<string, React.CSSProperties> = {
-  page: { fontFamily: "'DM Sans', sans-serif", background: '#faf8f4', minHeight: '100vh', color: '#2a1f14' },
+  const handleCambiarEstado = async (id: number, estado: EstadoTurno): Promise<void> => {
+    try {
+      await fetch(`${API_BASE}/api/turnos/${id}/estado`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ estado }),
+      });
+      fetchTurnos();
+    } catch {
+      alert('Error al cambiar el estado.');
+    }
+  };
 
-  nav: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 48px', borderBottom: '1px solid #ede8e0', background: '#faf8f4', position: 'sticky', top: 0, zIndex: 100 },
-  logo: { fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 700, color: '#2a1f14', letterSpacing: 2 },
-  navLinks: { display: 'flex', alignItems: 'center', gap: 24 },
-  navLink: { background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#5a4a3a', fontFamily: "'DM Sans', sans-serif" },
-  navBtn: { background: '#2a1f14', color: '#faf8f4', border: 'none', borderRadius: 100, padding: '10px 22px', fontSize: 14, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" },
+  const filtered = turnos.filter((t: Turno) => {
+    const matchEstado = filterEstado === 'todos' || t.estado === filterEstado;
+    const matchNombre = searchNombre === '' || t.nombre.toLowerCase().includes(searchNombre.toLowerCase());
+    return matchEstado && matchNombre;
+  });
 
-  hero: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '80px 48px', minHeight: '88vh', position: 'relative', overflow: 'hidden' },
-  heroDecor: { position: 'absolute', top: -100, right: -100, width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, #e8ddd0 0%, transparent 70%)', zIndex: 0 },
-  heroContent: { maxWidth: 560, zIndex: 1 },
-  heroTag: { fontSize: 13, letterSpacing: 3, textTransform: 'uppercase', color: '#9a8a7a', marginBottom: 20 },
-  heroTitle: { fontFamily: "'Playfair Display', serif", fontSize: 72, lineHeight: 1.1, fontWeight: 700, marginBottom: 24, color: '#2a1f14' },
-  heroDesc: { fontSize: 18, lineHeight: 1.7, color: '#5a4a3a', marginBottom: 36 },
-  heroBtns: { display: 'flex', gap: 14 },
-  heroVisual: { zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 },
-  heroCircle: { width: 300, height: 300, borderRadius: '50%', background: 'linear-gradient(135deg, #e8ddd0, #d4c5b0)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #c8b99a' },
-  heroInitials: { fontFamily: "'Playfair Display', serif", fontSize: 72, color: '#5a4a3a', fontStyle: 'italic' },
-  heroFloatCard: { background: '#fff', borderRadius: 16, padding: '14px 20px', boxShadow: '0 8px 32px rgba(90,74,58,0.12)', display: 'flex', alignItems: 'center', gap: 10 },
+  const counts = {
+    total:      turnos.length,
+    pendiente:  turnos.filter(t => t.estado === 'pendiente').length,
+    confirmado: turnos.filter(t => t.estado === 'confirmado').length,
+    cancelado:  turnos.filter(t => t.estado === 'cancelado').length,
+  };
 
-  btnPrimary: { background: '#2a1f14', color: '#faf8f4', border: 'none', borderRadius: 100, padding: '14px 28px', fontSize: 15, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", fontWeight: 500 },
-  btnSecondary: { background: 'transparent', color: '#2a1f14', border: '1.5px solid #2a1f14', borderRadius: 100, padding: '14px 28px', fontSize: 15, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" },
+  const statsData = [
+    { label: 'Total turnos',  value: counts.total,      className: 'stat-total',      icon: '📋' },
+    { label: 'Pendientes',    value: counts.pendiente,  className: 'stat-pendiente',  icon: '⏳' },
+    { label: 'Confirmados',   value: counts.confirmado, className: 'stat-confirmado', icon: '✅' },
+    { label: 'Cancelados',    value: counts.cancelado,  className: 'stat-cancelado',  icon: '❌' },
+  ];
 
-  about: { padding: '80px 48px', background: '#f2ece3' },
-  aboutInner: { maxWidth: 1000, margin: '0 auto', display: 'flex', gap: 60, alignItems: 'flex-start', flexWrap: 'wrap' },
-  aboutText: { flex: 1, minWidth: 280 },
-  aboutDesc: { fontSize: 16, lineHeight: 1.8, color: '#5a4a3a', marginBottom: 16 },
-  aboutCards: { display: 'flex', flexDirection: 'column', gap: 16 },
-  aboutCard: { background: '#faf8f4', borderRadius: 16, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 14, minWidth: 240 },
+  const filterOptions = [
+    { label: 'Todos',      value: 'todos'      },
+    { label: 'Pendiente',  value: 'pendiente'  },
+    { label: 'Confirmado', value: 'confirmado' },
+    { label: 'Cancelado',  value: 'cancelado'  },
+  ];
 
-  sectionTag: { fontSize: 12, letterSpacing: 3, textTransform: 'uppercase', color: '#9a8a7a', marginBottom: 12 },
-  sectionTitle: { fontFamily: "'Playfair Display', serif", fontSize: 40, fontWeight: 700, marginBottom: 32, color: '#2a1f14' },
+  return (
+    <div className="home-page">
+      <div className="bg-blob-1" />
+      <div className="bg-blob-2" />
 
-  services: { padding: '80px 48px', maxWidth: 1100, margin: '0 auto', textAlign: 'center' as const },
-  serviceCards: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, marginTop: 8 },
-  serviceCard: { background: '#fff', borderRadius: 24, padding: '36px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' as const, border: '1px solid #ede8e0', transition: 'transform 0.3s ease, box-shadow 0.3s ease', cursor: 'default' },
-  serviceCardTag: { fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: '#9a8a7a', background: '#f2ece3', padding: '4px 12px', borderRadius: 100, marginBottom: 14 },
-  serviceCardTitle: { fontFamily: "'Playfair Display', serif", fontSize: 22, marginBottom: 12, color: '#2a1f14' },
-  serviceCardDesc: { fontSize: 14, color: '#5a4a3a', lineHeight: 1.7, marginBottom: 24 },
-  serviceCardBtn: { background: 'none', border: 'none', color: '#2a1f14', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" },
+      <div className="home-container">
 
-  cta: { background: '#2a1f14', color: '#faf8f4', padding: '80px 48px', textAlign: 'center' as const },
-  ctaTitle: { fontFamily: "'Playfair Display', serif", fontSize: 44, marginBottom: 16, color: '#faf8f4' },
-  ctaDesc: { fontSize: 17, color: '#c8b99a', marginBottom: 36 },
+        {/* Bienvenida */}
+        <div className="welcome-card">
+          <div>
+            <p className="welcome-sub">Panel de administración</p>
+            <h1 className="welcome-title">
+              Bienvenida, <span className="name-highlight">Natalia Ferri</span> 👋
+            </h1>
+            <p className="welcome-desc">Gestioná todos los turnos desde este panel.</p>
+          </div>
+          <div className="welcome-date">
+            <span className="date-text">
+              {new Date().toLocaleDateString('es-AR', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+              })}
+            </span>
+          </div>
+        </div>
 
-  footer: { padding: '40px 48px', borderTop: '1px solid #ede8e0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 },
-};
+        {/* Stats */}
+        <div className="stats-grid">
+          {statsData.map((stat) => (
+            <div key={stat.label} className={`stat-card ${stat.className}`}>
+              <span className="stat-icon">{stat.icon}</span>
+              <span className="stat-value">{stat.value}</span>
+              <span className="stat-label">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Tabla ABM */}
+        <div className="table-card">
+          <div className="table-header">
+            <h2 className="table-title">Detalle de Turnos</h2>
+            <button className="btn-primary" onClick={() => { setEditTurno(null); setModalOpen(true); }}>
+              + Nuevo turno
+            </button>
+          </div>
+
+          <div className="filters-row">
+            <input
+              className="form-input search-input"
+              placeholder="Buscar por nombre..."
+              value={searchNombre}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchNombre(e.target.value)}
+            />
+            <div className="filter-btns">
+              {filterOptions.map(({ label, value }) => (
+                <button
+                  key={value}
+                  className={`filter-btn ${filterEstado === value ? 'filter-btn--active' : ''}`}
+                  onClick={() => setFilterEstado(value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="center-msg">
+              <div className="spinner" />
+              <p className="center-msg-text">Cargando turnos...</p>
+            </div>
+          ) : fetchError ? (
+            <div className="center-msg">
+              <p className="error-text">{fetchError}</p>
+              <button className="btn-secondary" onClick={fetchTurnos}>Reintentar</button>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="center-msg">
+              <p className="empty-icon">📭</p>
+              <p className="center-msg-text">No hay turnos para mostrar.</p>
+            </div>
+          ) : (
+            <div className="table-wrapper">
+              <table className="reservas-table">
+                <thead>
+                  <tr>
+                    {['ID','Nombre','Email','Teléfono','Fecha','Hora','Tipo','Estado','Creado','Acciones'].map(h => (
+                      <th key={h} className="table-th">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((t: Turno, i: number) => (
+                    <tr key={t.id} className={i % 2 === 0 ? 'row-even' : 'row-odd'}>
+                      <td className="table-td"><span className="id-badge">#{t.id}</span></td>
+                      <td className="table-td td-nombre">{t.nombre}</td>
+                      <td className="table-td td-email">{t.email}</td>
+                      <td className="table-td">{t.telefono || <span className="no-data">—</span>}</td>
+                      <td className="table-td">{new Date(t.fecha).toLocaleDateString('es-AR')}</td>
+                      <td className="table-td">{t.hora.slice(0,5)} hs</td>
+                      <td className="table-td">
+                        <span className={`tipo-badge tipo-${t.tipo_sesion}`}>
+                          {TIPO_LABEL[t.tipo_sesion]}
+                        </span>
+                      </td>
+                      <td className="table-td">
+                        <select
+                          className={`estado-select estado-${t.estado}`}
+                          value={t.estado}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                            handleCambiarEstado(t.id, e.target.value as EstadoTurno)
+                          }
+                        >
+                          <option value="pendiente">Pendiente</option>
+                          <option value="confirmado">Confirmado</option>
+                          <option value="cancelado">Cancelado</option>
+                        </select>
+                      </td>
+                      <td className="table-td td-date">
+                        {new Date(t.created_at).toLocaleDateString('es-AR')}
+                      </td>
+                      <td className="table-td">
+                        <div className="action-btns">
+                          <button className="btn-action btn-edit"   title="Editar"    onClick={() => { setEditTurno(t); setModalOpen(true); }}>✎</button>
+                          <button className="btn-action btn-delete" title="Eliminar"  onClick={() => setDeleteId(t.id)}>🗑</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {modalOpen && (
+        <TurnoModal
+          turno={editTurno}
+          onClose={() => setModalOpen(false)}
+          onSave={fetchTurnos}
+        />
+      )}
+
+      {deleteId !== null && (
+        <div className="overlay" onClick={() => setDeleteId(null)}>
+          <div className="modal modal--sm" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="modal-title">Confirmar eliminación</span>
+            </div>
+            <div className="modal-confirm-body">
+              <p className="confirm-text">
+                ¿Estás segura de que querés eliminar el turno{' '}
+                <strong className="confirm-id">#{deleteId}</strong>?
+                Esta acción no se puede deshacer.
+              </p>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setDeleteId(null)}>Cancelar</button>
+              <button className="btn-primary btn-danger" onClick={() => handleDelete(deleteId)}>Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
