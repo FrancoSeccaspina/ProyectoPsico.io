@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:3033/api',  // ✅ corregido
+  baseURL: '/api',  
 });
 
 // ── Públicas ──────────────────────────────────────────────────────
@@ -29,3 +29,4 @@ export const editarTurno = (id: number, data: object) =>
 
 export const eliminarTurno = (id: number) =>
   API.delete(`/admin/turnos/${id}`);
+

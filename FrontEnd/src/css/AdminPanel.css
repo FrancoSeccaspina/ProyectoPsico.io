@@ -1,310 +1,231 @@
-/* ───── RESET ───── */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* --- Variables & Base --- */
+:root {
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --bg-input: #0f172a; /* Ajustado para mejor contraste interno */
+  --bg-input-hover: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --border: #334155;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
 }
 
-/* ───── BASE ───── */
 body {
-  background: #000;
-  color: #fff;
+  background-color: var(--bg-main);
+  color: var(--text-main);
   font-family: 'Inter', sans-serif;
+  margin: 0;
 }
 
-/* ───── CONTENEDORES ───── */
-.page {
-  min-height: 100vh;
-  background: #000;
-  padding: 20px;
+/* --- Layout --- */
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
 }
 
-.container {
-  max-width: 1300px;
-  margin: auto;
+/* --- Cards --- */
+.welcome-card, .stat-card, .table-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
 }
 
-/* ───── CARDS ───── */
-.welcomeCard,
-.statCard,
-.tableCard,
-.modal {
-  background: #000;
-  border: 1px solid #222;
-  border-radius: 14px;
-  padding: 20px;
-}
-
-/* ───── WELCOME ───── */
-.welcomeCard {
+.welcome-card {
+  padding: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 10px;
 }
 
-.welcomeSub,
-.welcomeDesc,
-.dateText {
-  color: #fff;
-  opacity: 0.7;
-}
+.accent-text { color: var(--accent); font-weight: bold; }
 
-.welcomeTitle {
-  font-size: 22px;
-  font-weight: bold;
-  color: #fff;
-}
-
-/* ───── STATS ───── */
-.statsGrid {
+/* --- Stats Grid --- */
+.stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 15px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
 }
 
-.statCard {
+.stat-card {
+  padding: 1.5rem;
   text-align: center;
+  transition: 0.2s;
 }
 
-.statValue {
-  font-size: 22px;
-  font-weight: bold;
-  color: #fff;
-}
+.stat-card:hover { transform: translateY(-4px); }
+.stat-value { font-size: 2.2rem; font-weight: 800; display: block; }
+.stat-label { color: var(--text-muted); font-size: 0.9rem; }
 
-.statLabel {
-  font-size: 13px;
-  opacity: 0.7;
-}
-
-/* ───── HEADER TABLA ───── */
-.tableHeader {
+/* --- Table & Toolbar --- */
+.table-header-main {
+  padding: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  border-bottom: 1px solid var(--border);
 }
 
-.tableTitle {
-  font-size: 18px;
-  color: #fff;
-}
-
-/* ───── BOTONES ───── */
-button {
-  cursor: pointer;
-  border: none;
-}
-
-.btnPrimary {
-  background: #fff;
-  color: #000;
-  padding: 10px 16px;
-  border-radius: 8px;
-}
-
-.btnSecondary {
-  background: #111;
-  color: #fff;
-  padding: 10px 14px;
-  border: 1px solid #333;
-  border-radius: 8px;
-}
-
-.btnEdit {
-  background: #222;
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
-}
-
-.btnDelete {
-  background: #111;
-  color: #ff4d4d;
-  padding: 6px 10px;
-  border-radius: 6px;
-}
-
-/* ───── FILTROS ───── */
-.filtersRow {
+.table-toolbar {
+  padding: 1rem 1.5rem;
   display: flex;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 15px;
+  background: rgba(0,0,0,0.2);
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
-.filterBtn {
-  background: #111;
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 8px;
-}
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th { padding: 1rem; text-align: left; color: var(--text-muted); font-size: 0.8rem; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+.admin-table td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
 
-.filterBtnActive {
-  background: #fff;
-  color: #000;
-}
-
-/* ───── INPUTS ───── */
-.input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: #000;
-  color: #fff;
-}
-
-/* ───── TABLA ───── */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 900px;
-}
-
-th {
-  text-align: left;
-  padding: 12px;
-  font-size: 13px;
-  color: #fff;
-  border-bottom: 1px solid #222;
-}
-
-td {
-  padding: 12px;
-  font-size: 14px;
-  color: #fff;
-}
-
-tbody tr:nth-child(even) {
-  background: #050505;
-}
-
-/* ───── BADGES ───── */
-.idBadge {
-  border: 1px solid #333;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-
-.tipoBadge {
-  border: 1px solid #333;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-
-.estadoSelect {
-  background: #000;
-  color: #fff;
-  border: 1px solid #333;
-  padding: 6px;
-  border-radius: 6px;
-}
-
-/* ───── MODAL ───── */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.9);
+/* --- Acciones en Tabla --- */
+.actions-cell {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  gap: 8px;
 }
 
-.modalHeader {
+.btn-edit, .btn-delete {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-edit:hover { border-color: var(--accent); color: var(--accent); }
+.btn-delete:hover { border-color: var(--danger); color: var(--danger); }
+
+/* --- Inputs & Buttons --- */
+.input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: white;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+.btn-secondary {
+  background: #334155;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.estado-select {
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* --- Modales Mejorados --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: var(--bg-card);
+  width: 95%;
+  max-width: 500px;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+}
+
+.modal-header {
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #222;
-  padding-bottom: 10px;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
-.modalTitle {
-  color: #fff;
+.modal-header h3 { margin: 0; font-size: 1.4rem; }
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 
-.closeBtn {
-  background: none;
-  color: #fff;
-  font-size: 18px;
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
-.modalBody {
-  padding: 20px 0;
-}
-
-.modalFooter {
+.modal-footer {
+  margin-top: 2rem;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  border-top: 1px solid #222;
-  padding-top: 10px;
+  gap: 1rem;
 }
 
-/* ───── MENSAJES ───── */
-.centerMsg {
-  text-align: center;
-  padding: 40px;
+/* --- Filtros --- */
+.filter-group { display: flex; gap: 8px; }
+.filter-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.2s;
 }
 
-/* ───── SPINNER ───── */
-.spinner {
-  width: 30px;
-  height: 30px;
-  border: 3px solid #222;
-  border-top: 3px solid #fff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: auto;
-}
+.filter-btn.active.btn-todos { border-color: var(--accent); color: var(--accent); background: rgba(139, 92, 246, 0.1); }
+.filter-btn.active.btn-pendiente { border-color: var(--warning); color: var(--warning); background: rgba(245, 158, 11, 0.1); }
+.filter-btn.active.btn-confirmado { border-color: var(--success); color: var(--success); background: rgba(16, 185, 129, 0.1); }
+.filter-btn.active.btn-cancelado { border-color: var(--danger); color: var(--danger); background: rgba(239, 68, 68, 0.1); }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ───── RESPONSIVE ───── */
+/* --- Mobile --- */
 @media (max-width: 768px) {
-
-  .welcomeCard {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .tableHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .filtersRow {
-    flex-direction: column;
-  }
-
-  .table {
-    min-width: 700px;
-  }
-}
-
-@media (max-width: 480px) {
-
-  .page {
-    padding: 10px;
-  }
-
-  .welcomeTitle {
-    font-size: 18px;
-  }
-
-  .statValue {
-    font-size: 18px;
-  }
+  .welcome-card { flex-direction: column; text-align: center; gap: 1rem; }
+  .table-toolbar { flex-direction: column; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .admin-table th:nth-child(3), .admin-table td:nth-child(3),
+  .admin-table th:nth-child(5), .admin-table td:nth-child(5) { display: none; }
 }

@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AdminPanel from './pages/admin/AdminPanel';
-/*import AdminPanel from './pages/admin/AdminPanel';*/
 
 function App() {
   return (
