@@ -2,6 +2,9 @@ import axios from 'axios';
 
 const API = axios.create({
   baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // ── Públicas ──────────────────────────────────────────────────────
@@ -21,9 +24,16 @@ export const crearTopico = (data: {
   contenido: string;
   imagen_url?: string;
   publicado?: boolean;
-}) => API.post('/admin/topicos', data);
+}) =>
+  API.post('/admin/topicos', data);
 
-export const editarTopico = (id: number, data: object) =>
+export const editarTopico = (id: number, data: {
+  titulo?: string;
+  resenia?: string;
+  contenido?: string;
+  imagen_url?: string;
+  publicado?: boolean;
+}) =>
   API.put(`/admin/topicos/${id}`, data);
 
 export const eliminarTopico = (id: number) =>

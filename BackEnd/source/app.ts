@@ -41,6 +41,14 @@ app.get('/reserva', (req, res) => {
 app.get('/turnos', (req, res) => {
     res.render("turnos");
 });
+app.get('/topicos', (req, res) => {
+    res.render("topicos");
+});
+
+/* 🔥 DETALLE DINÁMICO */
+app.get('/topicos/:slug', (req, res) => {
+    res.render("topicoDetalle");
+});
 app.use('/api', 
     reservaApiRoutes,
     usuariosApiRoutes,

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<%- include('partials/head.ejs') %>
+  <title>Detalle</title>
+  <link rel="stylesheet" href="/css/topicoDetalle.css">
+  <link rel="stylesheet" href="/css/index.css">
+
+</head>
+<body>
+
+    <header>
+        <%- include('partials/header.ejs') %>
+
+    </header>
+
+  <main class="container">
+    <a href="/topicos" class="back">← Volver</a>
+    <div id="topico-detalle"></div>
+  </main>
+<footer>
+    <%- include('partials/footer.ejs') %>
+</footer>
+  <!-- JS separado -->
+  <script src="/js/topicoDetalle.js"></script>
+
+</body>
+</html>
