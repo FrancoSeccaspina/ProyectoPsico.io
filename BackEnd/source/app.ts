@@ -4,6 +4,7 @@ import path from 'path';
 import usuariosApiRoutes from './routes/api/usuario.api.routes.js';
 import reservaApiRoutes from './routes/api/reserva.api.routes.js';
 import turnosApiRoutes from './routes/api/turnos.api.routes.js';
+import topicoApiRoutes from './routes/api/topico.api.routes.js';
 // IMPORTANTE: Esto ejecuta la inicialización y las asociaciones de tus modelos
 import reservaRoutes from './routes/reserva.routes.js';
 import './database/models/index.js'; 
@@ -43,7 +44,8 @@ app.get('/turnos', (req, res) => {
 app.use('/api', 
     reservaApiRoutes,
     usuariosApiRoutes,
-    turnosApiRoutes);
+    turnosApiRoutes,
+    topicoApiRoutes);
 
 
 app.use(reservaRoutes);
