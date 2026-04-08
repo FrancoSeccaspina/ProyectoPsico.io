@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:3033/admin/turnos',
+  baseURL: 'http://localhost:3033/api',  // ✅ corregido
 });
 
 // ── Públicas ──────────────────────────────────────────────────────

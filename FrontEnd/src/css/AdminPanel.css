@@ -1,0 +1,310 @@
+/* ───── RESET ───── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ───── BASE ───── */
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ───── CONTENEDORES ───── */
+.page {
+  min-height: 100vh;
+  background: #000;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1300px;
+  margin: auto;
+}
+
+/* ───── CARDS ───── */
+.welcomeCard,
+.statCard,
+.tableCard,
+.modal {
+  background: #000;
+  border: 1px solid #222;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+/* ───── WELCOME ───── */
+.welcomeCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.welcomeSub,
+.welcomeDesc,
+.dateText {
+  color: #fff;
+  opacity: 0.7;
+}
+
+.welcomeTitle {
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* ───── STATS ───── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.statCard {
+  text-align: center;
+}
+
+.statValue {
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.statLabel {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* ───── HEADER TABLA ───── */
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.tableTitle {
+  font-size: 18px;
+  color: #fff;
+}
+
+/* ───── BOTONES ───── */
+button {
+  cursor: pointer;
+  border: none;
+}
+
+.btnPrimary {
+  background: #fff;
+  color: #000;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+
+.btnSecondary {
+  background: #111;
+  color: #fff;
+  padding: 10px 14px;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.btnEdit {
+  background: #222;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.btnDelete {
+  background: #111;
+  color: #ff4d4d;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* ───── FILTROS ───── */
+.filtersRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  background: #111;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.filterBtnActive {
+  background: #fff;
+  color: #000;
+}
+
+/* ───── INPUTS ───── */
+.input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #000;
+  color: #fff;
+}
+
+/* ───── TABLA ───── */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+th {
+  text-align: left;
+  padding: 12px;
+  font-size: 13px;
+  color: #fff;
+  border-bottom: 1px solid #222;
+}
+
+td {
+  padding: 12px;
+  font-size: 14px;
+  color: #fff;
+}
+
+tbody tr:nth-child(even) {
+  background: #050505;
+}
+
+/* ───── BADGES ───── */
+.idBadge {
+  border: 1px solid #333;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.tipoBadge {
+  border: 1px solid #333;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.estadoSelect {
+  background: #000;
+  color: #fff;
+  border: 1px solid #333;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+/* ───── MODAL ───── */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #222;
+  padding-bottom: 10px;
+}
+
+.modalTitle {
+  color: #fff;
+}
+
+.closeBtn {
+  background: none;
+  color: #fff;
+  font-size: 18px;
+}
+
+.modalBody {
+  padding: 20px 0;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #222;
+  padding-top: 10px;
+}
+
+/* ───── MENSAJES ───── */
+.centerMsg {
+  text-align: center;
+  padding: 40px;
+}
+
+/* ───── SPINNER ───── */
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #222;
+  border-top: 3px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ───── RESPONSIVE ───── */
+@media (max-width: 768px) {
+
+  .welcomeCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tableHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .filtersRow {
+    flex-direction: column;
+  }
+
+  .table {
+    min-width: 700px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .page {
+    padding: 10px;
+  }
+
+  .welcomeTitle {
+    font-size: 18px;
+  }
+
+  .statValue {
+    font-size: 18px;
+  }
+}
