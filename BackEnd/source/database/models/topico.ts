@@ -5,6 +5,14 @@ import {
 } from "sequelize";
 import { sequelize } from '../config/db.js';
 
+export type TipoBloque = 'titulo' | 'subtitulo' | 'texto' | 'imagen';
+
+export interface Bloque {
+  id: string;
+  tipo: TipoBloque;
+  valor: string;
+}
+
 interface TopicoAttributes {
   id: number;
   titulo: string;
@@ -13,6 +21,7 @@ interface TopicoAttributes {
   imagen_url?: string | null;
   slug: string;
   publicado: boolean;
+  bloques: Bloque[];          // 👈 nuevo
   created_at?: Date;
   updated_at?: Date;
 }
@@ -28,6 +37,7 @@ export class Topico extends Model<TopicoAttributes, TopicoCreationAttributes>
   declare imagen_url: string | null;
   declare slug: string;
   declare publicado: boolean;
+  declare bloques: Bloque[];  // 👈 nuevo
 
   declare readonly created_at: Date;
   declare readonly updated_at: Date;
@@ -67,6 +77,11 @@ export const initTopicoModel = (sequelize: Sequelize) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true,
+      },
+      bloques: {                        // 👈 nuevo
+        type: DataTypes.JSON,
+        allowNull: false,
+        defaultValue: [],
       },
     },
     {

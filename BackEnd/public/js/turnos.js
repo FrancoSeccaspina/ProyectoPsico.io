@@ -154,7 +154,7 @@ function renderSlots(fechaStr, d, m){
   });
 }
 
-/* ================= SELECCION HORA ================= */
+/* ================= SELECCION HORA ================= Aca iria lo que me mando por Wpp*/
 
 function selectHora(h){
   selHora = h;
@@ -164,12 +164,11 @@ function selectHora(h){
   const form = document.getElementById('form-card');
   form.style.display = 'block';
 
-  form.scrollIntoView({
-    behavior: 'smooth',
-    block: 'center' // 🔥 mejor UX
-  });
+  document.getElementById('confirm-btn').scrollIntoView({
+  behavior: 'smooth',
+  block: 'start'
+});
 }
-
 /* ================= CONFIRMAR ================= */
 
 document.getElementById('confirm-btn').onclick = async () => {

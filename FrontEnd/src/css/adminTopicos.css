@@ -226,6 +226,87 @@ body {
   color: var(--danger);
 }
 
+/* Modal más ancho para el editor de bloques */
+.modal-wide {
+  max-width: 720px;
+  width: 95%;
+}
+
+/* Lista de bloques */
+.bloques-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.bloque-item {
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #0e1d2d;
+}
+
+.bloque-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.bloque-tipo {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted, #64748b);
+}
+
+.bloque-acciones {
+  display: flex;
+  gap: 4px;
+}
+
+.bloque-acciones button {
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.bloque-acciones button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Botones para agregar bloques */
+.agregar-bloque {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.btn-bloque {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px dashed var(--border, #94a3b8);
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background .15s;
+}
+
+.btn-bloque:hover {
+  background: var(--bg-subtle, #f1f5f9);
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .table-header-main {

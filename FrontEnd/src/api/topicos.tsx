@@ -1,10 +1,16 @@
 import axios from 'axios';
 
+export type TipoBloque = 'titulo' | 'subtitulo' | 'texto' | 'imagen';
+
+export interface Bloque {
+  id: string;
+  tipo: TipoBloque;
+  valor: string;
+}
+
 const API = axios.create({
   baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
 });
 
 // ── Públicas ──────────────────────────────────────────────────────
@@ -19,19 +25,15 @@ export const getTodosTopicosAdmin = () =>
   API.get('/admin/topicos');
 
 export const crearTopico = (data: {
-  titulo: string;
   resenia: string;
-  contenido: string;
-  imagen_url?: string;
+  bloques: Bloque[];
   publicado?: boolean;
 }) =>
   API.post('/admin/topicos', data);
 
 export const editarTopico = (id: number, data: {
-  titulo?: string;
   resenia?: string;
-  contenido?: string;
-  imagen_url?: string;
+  bloques?: Bloque[];
   publicado?: boolean;
 }) =>
   API.put(`/admin/topicos/${id}`, data);
