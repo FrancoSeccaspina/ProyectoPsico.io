@@ -45,6 +45,20 @@ app.get('/topicos', (req, res) => {
     res.render("topicos");
 });
 
+app.post('/owner-access', (req, res) => {
+  const { password } = req.body;
+  
+  if (password === process.env.OWNER_TOKEN) {
+    // Redirige al frontend con el token
+    res.json({ 
+      success: true, 
+      url: `${process.env.REACT_APP_FRONTEND_DOMAIN_HOST}/?token=${process.env.OWNER_TOKEN}` 
+    });
+  } else {
+    res.status(401).json({ success: false, mensaje: 'Contraseña incorrecta' });
+  }
+});
+
 /* 🔥 DETALLE DINÁMICO */
 app.get('/topicos/:slug', (req, res) => {
     res.render("topicoDetalle");

@@ -753,6 +753,115 @@ body{
     text-transform: uppercase;
 }
 
+/* ===== OWNER TRIGGER — Zona invisible ===== */
+#owner-trigger {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    cursor: default;
+}
+
+/* ===== OWNER MODAL — Overlay ===== */
+#owner-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+#owner-modal.active {
+    display: flex;
+}
+
+/* ===== OWNER MODAL — Caja ===== */
+.owner-modal-box {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 20px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.owner-modal-box h3 {
+    margin-bottom: 1rem;
+    color: #4b3c3c;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* ===== INPUT ===== */
+#owner-password {
+    width: 100%;
+    padding: 0.5rem 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e0c8d0;
+    border-radius: 30px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    outline: none;
+    font-family: Arial, sans-serif;
+}
+
+#owner-password:focus {
+    border-color: #6d4c5b;
+}
+
+/* ===== BOTONES ===== */
+.owner-modal-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+#owner-submit {
+    padding: 0.5rem 1.2rem;
+    background: #6d4c5b;
+    color: #ffffff;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s, transform 0.2s;
+}
+
+#owner-submit:hover {
+    background: #9b6f7d;
+    transform: translateY(-2px);
+}
+
+#owner-cancel {
+    padding: 0.5rem 1.2rem;
+    background: #FCE4EC;
+    color: #4b3c3c;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+#owner-cancel:hover {
+    background: #f7c5d8;
+}
+
+/* ===== ERROR ===== */
+#owner-error {
+    display: none;
+    color: #c0392b;
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+}
+
+#owner-error.active {
+    display: block;
+}
+
 @keyframes scrollText {
     0% { transform: translateX(0); }
     100% { transform: translateX(-100%); }
@@ -787,9 +896,10 @@ body{
 
 /* FOOTER */
 
-.main-footer{
-    background:#FCE4EC; /* rosa pastel suave */
-    padding:40px 20px;
+.main-footer {
+    background: #FCE4EC;
+    padding: 40px 20px;
+    position: relative; /* ← SOLO ESTO HAY QUE AGREGAR */
 }
 
 /* TITULO */

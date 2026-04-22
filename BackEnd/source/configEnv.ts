@@ -13,6 +13,8 @@ export const TIEMPO_CONTROL_STOCK_MINUTOS = process.env.TIEMPO_CONTROL_STOCK_MIN
 export const JWT_SECRET = process.env.JWT_SECRET;
 export const REACT_APP_FRONTEND_DOMAIN_HOST = process.env.REACT_APP_FRONTEND_DOMAIN_HOST;
 export const REACT_APP_BACKEND_DOMAIN_HOST = process.env.REACT_APP_BACKEND_DOMAIN_HOST;
+// Agregá esta línea junto a las demás exportaciones
+export const OWNER_TOKEN = process.env.OWNER_TOKEN;
 
 // 📧 Mailer
 export const MAIL_USER = process.env.MAIL_USER;

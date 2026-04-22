@@ -122,7 +122,9 @@ h1 {
   background: #fafafa;
   color: #aaa;
 }
-
+#form-card {
+  padding-bottom: 30px;
+}
 /* DOT */
 .day-cell .dot {
   width: 6px;

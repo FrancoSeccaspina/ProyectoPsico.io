@@ -155,22 +155,18 @@ function renderSlots(fechaStr, d, m){
 }
 
 /* ================= SELECCION HORA ================= Aca iria lo que me mando por Wpp*/
-
 function selectHora(h){
   selHora = h;
-
   renderSlots(selDate, selDate.split('-')[2], new Date(selDate).getMonth());
-
   const form = document.getElementById('form-card');
   form.style.display = 'block';
-
-  document.getElementById('confirm-btn').scrollIntoView({
-  behavior: 'smooth',
-  block: 'start'
-});
-}
-/* ================= CONFIRMAR ================= */
-
+  setTimeout(() => {
+    form.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest'
+    });
+  }, 50);
+  }
 document.getElementById('confirm-btn').onclick = async () => {
   const nombre      = document.getElementById('inp-nombre').value.trim();
   const email       = document.getElementById('inp-email').value.trim();

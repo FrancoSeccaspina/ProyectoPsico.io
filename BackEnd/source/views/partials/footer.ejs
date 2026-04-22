@@ -1,35 +1,49 @@
-    <footer class="main-footer">
+<footer class="main-footer">
+    <h4 class="titulo-licenciada">
+        <%= locals.nombre || "Lic. Natalia Ferri" %> | Psicóloga Clínica
+    </h4>
+    <section class="medios">
+        <ul class="medios-comunicacion">
+            <li class="mail">
+                <a href="mailto:lic.psicoebased@gmail.com">
+                    <i class="fa-solid fa-at"></i>
+                    <p>lic.psicoebased@gmail.com</p>
+                </a>
+            </li>
+            <li class="Agenda">
+                <i class="fa-solid fa-book"></i>
+                <p>Agenda Sesión</p>
+            </li>
+            <li class="telefono">
+                <i class="fa-solid fa-phone"></i>
+                <p>1144778877</p>
+            </li>
+        </ul>
+    </section>
+    <section class="redes">
+        <div class="radio-bottom"><i class="fa-brands fa-square-whatsapp"></i></div>
+        <div class="radio-bottom"><i class="fa-brands fa-square-instagram"></i></div>
+    </section>
 
-        <h4 class="titulo-licenciada">
-            <%= locals.nombre || "Lic. Natalia Ferri" %> | Psicóloga Clínica
-        </h4>
+    <!-- Zona invisible del dueño — esquina inferior izquierda -->
+    <div id="owner-trigger"></div>
+</footer>
 
-        <section class="medios">
-            <ul class="medios-comunicacion">
+<!-- Modal -->
+<div id="owner-modal">
+    <div class="owner-modal-box">
+        <h3>Acceso Admin</h3>
+        <input
+            id="owner-password"
+            type="password"
+            placeholder="Contraseña"
+        />
+        <div class="owner-modal-buttons">
+            <button id="owner-submit">Entrar</button>
+            <button id="owner-cancel">Cancelar</button>
+        </div>
+        <p id="owner-error">Contraseña incorrecta</p>
+    </div>
+</div>
 
-                <li class="mail">
-                    <a href="mailto:lic.psicoebased@gmail.com">
-                        <i class="fa-solid fa-at"></i>
-                        <p>lic.psicoebased@gmail.com</p>
-                    </a>
-                </li>
-
-                <li class="Agenda">
-                    <i class="fa-solid fa-book"></i>
-                    <p>Agenda Sesión</p>
-                </li>
-
-                <li class="telefono">
-                    <i class="fa-solid fa-phone"></i>
-                    <p>1144778877</p>
-                </li>
-
-            </ul>
-        </section>
-
-        <section class="redes">
-            <div class="radio-bottom"><i class="fa-brands fa-square-whatsapp"></i></div>
-            <div class="radio-bottom"><i class="fa-brands fa-square-instagram"></i></div>
-        </section>
-
-    </footer>
+<script src="/js/footer.js"></script>
